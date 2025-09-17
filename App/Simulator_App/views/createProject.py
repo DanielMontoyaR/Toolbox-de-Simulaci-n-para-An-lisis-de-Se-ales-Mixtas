@@ -8,10 +8,10 @@ from views.Simulator import Simulator
 class CreateProject(QDialog):
     def __init__(self, stacked_widget):
         super().__init__()
-        ui_path = os.path.join(os.path.dirname(__file__), "../ui/crearProyecto.ui")
+        ui_path = os.path.join(os.path.dirname(__file__), "../ui/ProjectCreate.ui")
         loadUi(ui_path, self)
 
-        self.stacked_widget = stacked_widget  # referencia al stack
+        self.stacked_widget = stacked_widget  # Store the stacked widget reference
         self.crearButton.clicked.connect(self.create_project)
         self.cancelarButton.clicked.connect(self.go_back)
         self.rutaButton.clicked.connect(self.browse_path)
@@ -21,29 +21,29 @@ class CreateProject(QDialog):
 
     def browse_path(self):
         from PyQt5.QtWidgets import QFileDialog
-        directory = QFileDialog.getExistingDirectory(self, "Seleccionar Directorio")
+        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
             self.rutalineEdit.setText(directory)
 
     def create_project(self):
-        print("Proyecto creado")
-        print(self.nombreproyectolineEdit.text())
+        #print("Project creation initiated")
+        #print(self.nombreproyectolineEdit.text())
 
         validation_result = create_project_validate_inputs(
             self.rutalineEdit.text(),
             self.nombreproyectolineEdit.text()
         )
         if validation_result == "EMPTY_NAME":
-            self.crearproyectoerrorLabel.setText("Error: El nombre del proyecto no puede estar vacío.")
+            self.crearproyectoerrorLabel.setText("Error: The project name cannot be empty.")
             return
         elif validation_result == "EMPTY_PATH":
-            self.crearproyectoerrorLabel.setText("Error: La ruta no puede estar vacía.")
+            self.crearproyectoerrorLabel.setText("Error: The file path cannot be empty.")
             return
         elif validation_result == "DUPLICATE":
-            self.crearproyectoerrorLabel.setText("Error: Ya existe un proyecto con ese nombre en la ruta especificada.")
+            self.crearproyectoerrorLabel.setText("Error: A project with the same name already exists in the specified path.")
             return
         elif validation_result == "INVALID_PATH":
-            self.crearproyectoerrorLabel.setText("Error: La ruta especificada no es válida.")
+            self.crearproyectoerrorLabel.setText("Error: The specified file path is not a valid directory.")
             return
         else:
             self.crearproyectoerrorLabel.setText("")

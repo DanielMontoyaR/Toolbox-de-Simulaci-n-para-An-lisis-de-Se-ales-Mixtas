@@ -7,7 +7,7 @@ from views.createProject import CreateProject
 class Start(QDialog):
     def __init__(self, stacked_widget):
         super().__init__()
-        ui_path = os.path.join(os.path.dirname(__file__), "../ui/inicio.ui")
+        ui_path = os.path.join(os.path.dirname(__file__), "../ui/Start.ui")
         loadUi(ui_path, self)
 
         self.stacked_widget = stacked_widget
@@ -21,19 +21,19 @@ class Start(QDialog):
         file_path = get_project_file(self)
 
         if file_path is None:
-            print("No se seleccionó ningún archivo")
+            print("No file selected")
             return
 
         if file_path == "INVALID":
-            self.openerrorLabel.setText("Error: El archivo no es válido (.txt).")
+            self.openerrorLabel.setText("Error: Invalid project file selected (txt).")
             return
         else:
             self.openerrorLabel.setText("")
 
         with open(file_path, "r") as file:
             content = file.read()
-            print(f"Contenido:\n{content}")
-        # Aquí luego cambias de ventana si quieres
+            print(f"Content:\n{content}")
+            # Change window to Simulator
         pass
 
     def create_project(self):

@@ -22,24 +22,28 @@ class ClickableLabel(QLabel):
     def replaceLabelInLayout(cls, old_label, new_label):
         """
         Replace a Qlabel with a ClickableLabel in its parent layout.
+
         Args:
             old_label: Original QLabel to be replaced
             new_label: The new ClickableLabel instance
+
+        returns:
+            bool: True if replaced in layout, False otherwise
         """
         parent_widget = old_label.parent()
         
         if parent_widget and parent_widget.layout():
             layout = parent_widget.layout()
             
-            # Buscar la posición del label original en el layout
+            # Search for the old label in the layout
             for i in range(layout.count()):
                 item = layout.itemAt(i)
                 if item.widget() == old_label:
-                    # Remover el label viejo y insertar el nuevo en la misma posición
+                    # Remove old label and insert new label at the same position
                     layout.removeWidget(old_label)
                     layout.insertWidget(i, new_label)
                     return True
         
-        # Si no hay layout, simplemente copiar atributos geométricos
+        # If not found in layout, just copy attributes
         cls.copyAttributes(new_label, old_label)
         return False
