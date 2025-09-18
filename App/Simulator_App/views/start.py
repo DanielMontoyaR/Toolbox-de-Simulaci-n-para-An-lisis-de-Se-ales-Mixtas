@@ -2,12 +2,12 @@ import os
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
 from utils.file_utils import get_project_file
-from views.createProject import CreateProject
+from views.create_project import CreateProject
 
 class Start(QDialog):
     def __init__(self, stacked_widget):
         super().__init__()
-        ui_path = os.path.join(os.path.dirname(__file__), "../ui/Start.ui")
+        ui_path = os.path.join(os.path.dirname(__file__), "../ui/start.ui")
         loadUi(ui_path, self)
 
         self.stacked_widget = stacked_widget

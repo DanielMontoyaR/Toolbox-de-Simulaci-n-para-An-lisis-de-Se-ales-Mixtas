@@ -2,7 +2,7 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
 from views.start import Start
-from views.Simulator import Simulator
+from views.simulator import Simulator
 def main():
     app = QApplication(sys.argv)
     widget = QtWidgets.QStackedWidget()

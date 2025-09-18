@@ -3,12 +3,12 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
 from utils.file_utils import create_project_file
 from utils.input_utils import create_project_validate_inputs
-from views.Simulator import Simulator
+from views.simulator import Simulator
 
 class CreateProject(QDialog):
     def __init__(self, stacked_widget):
         super().__init__()
-        ui_path = os.path.join(os.path.dirname(__file__), "../ui/ProjectCreate.ui")
+        ui_path = os.path.join(os.path.dirname(__file__), "../ui/project_create.ui")
         loadUi(ui_path, self)
 
         self.stacked_widget = stacked_widget  # Store the stacked widget reference
