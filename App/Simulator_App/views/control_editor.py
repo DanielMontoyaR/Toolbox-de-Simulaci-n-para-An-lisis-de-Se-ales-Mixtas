@@ -39,18 +39,9 @@ class ControlEditor(QDialog):
         self.update_pid_preview()
 
         # Set tooltips
-        self.kdLabelInfo.setToolTip("Derivative Gain (Kd):\n"
-                                    "Influences the system's response to the rate of change of the error.\n"
-                                    "Higher Kd values can help reduce overshoot and improve stability,\n"
-                                    "but may also lead to increased sensitivity to noise.")
-        self.kpLabelInfo.setToolTip("Proportional Gain (Kp):\n"
-                                    "Determines the reaction to the current error.\n"
-                                    "Higher Kp values result in a larger control action for a given error,\n"
-                                    "which can reduce rise time but may increase overshoot and lead to instability.")
-        self.kiLabelInfo.setToolTip("Integral Gain (Ki):\n"
-                                    "Addresses accumulated past errors.\n"
-                                    "Higher Ki values can eliminate steady-state error,\n"
-                                    "but may also lead to increased overshoot and oscillations.")
+        self.kdLabelInfo.setToolTip(self.controller_pid.get_descriptions()["kd"])
+        self.kpLabelInfo.setToolTip(self.controller_pid.get_descriptions()["kp"])
+        self.kiLabelInfo.setToolTip(self.controller_pid.get_descriptions()["ki"])
 
         # Load current values from the model (if any)
         self.load_from_model()
