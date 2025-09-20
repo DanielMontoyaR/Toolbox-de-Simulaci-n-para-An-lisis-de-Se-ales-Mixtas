@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
 from views.start import Start
 from views.simulator import Simulator
+import tests.plant_tester  as Tester
 def main():
     app = QApplication(sys.argv)
     widget = QtWidgets.QStackedWidget()
@@ -16,9 +17,11 @@ def main():
     #widget.setFixedHeight(441)
     widget.show()
     """
-    
 
-    mainwindow = Simulator(None)
+
+    #Tester.run_all_tests()
+    plant_types = ["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control"]
+    mainwindow = Simulator(plant_types[1])
     mainwindow.show()
     
 
