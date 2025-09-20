@@ -15,7 +15,8 @@ class CreateProject(QDialog):
         self.crearButton.clicked.connect(self.create_project)
         self.cancelarButton.clicked.connect(self.go_back)
         self.rutaButton.clicked.connect(self.browse_path)
-        
+        self.plantacomboBox.clear()
+        self.plantacomboBox.addItems(["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control"])
         self.stacked_widget.resize(self.size())
 
 
