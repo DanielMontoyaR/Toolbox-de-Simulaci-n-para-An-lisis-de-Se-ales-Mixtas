@@ -6,6 +6,7 @@ from utils.clickable_label import ClickableLabel
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QDoubleValidator
 from simulation_components.controller_pid import ControllerPID
+from simulation_components.plant import get_plant
 
 from utils.input_utils import simulator_create_pixmap_equation
 from views.control_editor import ControlEditor
@@ -44,12 +45,10 @@ class Simulator(QMainWindow):
         #Create models
         self.controller_pid = ControllerPID()
         
-        if(plant_type == "Ball and Beam"):
-            self.plant_controller = Plant.ball_and_beam(1,1,1,1,1,1)
-        elif(plant_type == "DC Motor Speed Control"):
-            self.plant_controller = Plant.motor_speed_control(1,1,1,1,1)
-        elif(plant_type == "DC Motor Position Control"):
-            self.plant_controller = Plant.motor_position_control(1,1,1,1,1)
+
+        self.plant_controller = get_plant(plant_type)
+
+        print("plant Type:", self.plant_controller.name)
 
     def on_input_label_clicked(self):
         print("Input label clicked")
@@ -97,7 +96,7 @@ class Simulator(QMainWindow):
         if result == QDialog.Accepted:
             # Apply changes to the model
             print("Accepted")
-            #dialog.apply_changes_to_model
+            dialog.apply_changes_to_model()
             #self.update_plant_label()
         else:
             print("Plant configuration canceled")

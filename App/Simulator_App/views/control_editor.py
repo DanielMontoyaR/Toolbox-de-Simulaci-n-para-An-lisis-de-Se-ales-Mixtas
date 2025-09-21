@@ -59,7 +59,7 @@ class ControlEditor(QDialog):
         ki = self.kiInput.text() or "Ki"
         kd = self.kdInput.text() or "Kd"
 
-        latex_eq = r"$%s + \frac{%s}{s} + %s\,s$" % (kp, ki, kd)
+        latex_eq = self.controller_pid.get_latex_equation(kp, ki, kd)
         pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=10)
 
         pixmap = pixmap.scaled(self.pidLabel.width(),

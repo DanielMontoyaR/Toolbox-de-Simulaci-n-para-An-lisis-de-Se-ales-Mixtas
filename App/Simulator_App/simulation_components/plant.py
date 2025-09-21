@@ -1,97 +1,144 @@
 import sympy as sp
+from abc import ABC, abstractmethod
 
 s = sp.symbols('s')
 
-class Plant:
-    PARAM_DESCRIPTIONS = {
-        'ball_and_beam':{
-            'm': 'm: Mass of the ball (kg)',
-            'R': 'R: Radius of the ball (m)',
-            'd': 'd: Distance from the pivot to the center of the ball (m)',
-            'g': 'g: Acceleration due to gravity (m/s^2)',
-            'L': 'L: Length of the beam (m)',
-            'J': 'J: Moment of inertia of the beam (kg*m^2)'
-        },
-        'motor': { # Used for motor_speed_control and motor_position_control
-            'J' : 'J: Moment of inertia of the rotor (kg*m^2)',
-            'b' : 'b: Motor viscous friction constant (N*m*s)',
-            'K' : 'K: Electromotive force constant (V/rad/s)',
-            'R' : 'R: Electric resistance (Ohm)',
-            'L' : 'L: Electric inductance (H)'
-        }
-    }
 
-    def __init__(self, name,plant_type, transfer_function=None, symbolic_expression=None, parameters=None):
+class Plant(ABC):
+    """Abstract base class for all plants."""
+
+    def __init__(self, name, parameters=None):
         self.name = name
-        self.plant_type = plant_type # For now: ball_and_beam and motor
-        self.transfer_function = transfer_function
-        self.symbolic_expression = symbolic_expression
         self.parameters = parameters or {}
 
+    @abstractmethod
     def get_transfer_function(self):
-        return self.transfer_function
-    
-    def get_symbolic_transfer_function(self):
-        return self.symbolic_expression
-    
-    def get_parameter_description(self, param_name):
-        return self.PARAM_DESCRIPTIONS.get(self.plant_type, {}).get(param_name, "No description")
+        """Return the symbolic transfer function (sympy expression)."""
+        pass
 
-    @classmethod
-    def ball_and_beam(cls, m, R, d, g, L, J):
-        """
-        Ball and Beam plant model
-        P(s) = -m * g * d / ( L*(J / R^2 + m) * s^2 )
-        """
-        numerator = -m * g * d
-        denominator = L * (J / R**2 + m) * s**2
-        transfer_function = numerator / denominator
-        
+    @abstractmethod
+    def get_latex_equation(self):
+        """Return the LaTeX string representation of the transfer function."""
+        pass
+
+    @abstractmethod
+    def get_parameter_descriptions(self):
+        """Return dict of parameter descriptions."""
+        pass
+
+    def get_parameters(self):
+        return self.parameters
+
+    def set_parameters(self, **kwargs):
+        """Update internal parameters with given values."""
+        self.parameters.update(kwargs)
+
+
+# ---------------- Specific Plants ---------------- #
+
+class BallAndBeamPlant(Plant):
+    DESCRIPTIONS = {
+        'm': 'm: Mass of the ball (kg)',
+        'R': 'R: Radius of the ball (m)',
+        'd': 'd: Distance from the pivot to the center of the ball (m)',
+        'g': 'g: Acceleration due to gravity (m/s^2)',
+        'L': 'L: Length of the beam (m)',
+        'J': 'J: Moment of inertia of the beam (kg*m^2)'
+    }
+
+    def __init__(self, m=1, R=1, d=1, g=9.81, L=1, J=1):
         params = {'m': m, 'R': R, 'd': d, 'g': g, 'L': L, 'J': J}
-        symbolic_expression = r"$\frac{-" + str(m) + r" \cdot " + str(g) + r" \cdot " + str(d) + "}{" + str(L) + r" \cdot \left(\frac{" + str(J) + "}{" + str(R) + "^2} + " + str(m) + r"\right) \cdot s^2}$"
-        
-        return cls(name="Ball and Beam",
-                   plant_type="ball_and_beam",
-                   transfer_function=transfer_function, 
-                   symbolic_expression=symbolic_expression, 
-                   parameters=params)
-    
-    @classmethod
-    def motor_speed_control(cls, J, b, K, R, L):
-        """
-        Creates a DC Motor Speed Control plant model.
-        P(s) = K / ( (J*s + b) * (L*s + R) + K^2 )
-        """
-        numerator = K
-        denominator = ( (J*s + b) * (L*s + R) + K**2 )
-        transfer_function = numerator / denominator
+        super().__init__("Ball and Beam", params)
 
+    def get_transfer_function(self):
+        p = self.parameters
+        numerator = -p['m'] * p['g'] * p['d']
+        denominator = p['L'] * (p['J'] / p['R']**2 + p['m']) * s**2
+        return numerator / denominator
+
+    def get_latex_equation(self, m=None, R=None, d=None, g=None, L=None, J=None):
+            """Return LaTeX equation, using provided values or defaults/symbols"""
+
+            m_val = str(m) if m is not None else 'm'
+            R_val = str(R) if R is not None else 'R'
+            d_val = str(d) if d is not None else 'd'
+            g_val = str(g) if g is not None else 'g'
+            L_val = str(L) if L is not None else 'L'
+            J_val = str(J) if J is not None else 'J'
+            
+
+            return (rf"$\frac{{-{m_val} \cdot {g_val} \cdot {d_val}}}"
+                    rf"{{{L_val} \cdot \left(\frac{{{J_val}}}{{{R_val}^2}} + {m_val}\right) \cdot s^2}}$")
+
+    def get_parameter_descriptions(self):
+        return self.DESCRIPTIONS
+
+
+class MotorSpeedPlant(Plant):
+    DESCRIPTIONS = {
+        'J': 'J: Moment of inertia of the rotor (kg*m^2)',
+        'b': 'b: Motor viscous friction constant (N*m*s)',
+        'K': 'K: Electromotive force constant (V/rad/s)',
+        'R': 'R: Electric resistance (Ohm)',
+        'L': 'L: Electric inductance (H)'
+    }
+
+    def __init__(self, J=1, b=1, K=1, R=1, L=1):
         params = {'J': J, 'b': b, 'K': K, 'R': R, 'L': L}
-        symbolic_expression = r"$\frac{" + str(K) + "}{" + r"\left(" + str(J) + "s + " + str(b) + r"\right) \cdot \left(" + str(L) + "s + " + str(R) + r"\right) + " + str(K) + "^2}$"
+        super().__init__("DC Motor Speed Control", params)
 
-        return cls(name="DC Motor Speed Control", 
-                   plant_type="motor",
-                   transfer_function=transfer_function, 
-                   symbolic_expression=symbolic_expression, 
-                   parameters=params)
-    
-    @classmethod
-    def motor_position_control(cls, J, b, K, R, L):
-        """
-        Creates a DC Motor Position Control plant model.
-        P(s) = K / (s * ( (J*s + b) * (L*s + R) + K^2 ))
-        """
-        numerator = K
-        denominator = (s * ( (J*s + b) * (L*s + R) + K**2 ))
-        transfer_function = numerator / denominator
+    def get_transfer_function(self):
+        p = self.parameters
+        numerator = p['K']
+        denominator = ( (p['J']*s + p['b']) * (p['L']*s + p['R']) + p['K']**2 )
+        return numerator / denominator
 
-        params = {'J': J, 'b': b, 'K': K, 'R': R, 'L': L}
-        symbolic_expression = r"$\frac{" + str(K) + "}{s \\left( \\left(" + str(J) + "s + " + str(b) + "\\right) \\left(" + str(L) + "s + " + str(R) + "\\right) + " + str(K) + "^2 \\right)}$"
+    def get_latex_equation(self, J=None, b=None, K=None, R=None, L=None):
+        """Return LaTeX equation, using provided values or symbols if None"""
+        J_val = str(J) if J is not None else 'J'
+        b_val = str(b) if b is not None else 'b'
+        K_val = str(K) if K is not None else 'K'
+        R_val = str(R) if R is not None else 'R'
+        L_val = str(L) if L is not None else 'L'
 
-        return cls(name="DC Motor Position Control", 
-                   plant_type="motor",
-                   transfer_function=transfer_function, 
-                   symbolic_expression=symbolic_expression, 
-                   parameters=params)
-    
+        return rf"$\frac{{{K_val}}}{{({J_val}s + {b_val})({L_val}s + {R_val}) + {K_val}^2}}$"
 
+    def get_parameter_descriptions(self):
+        return self.DESCRIPTIONS
+
+
+class MotorPositionPlant(MotorSpeedPlant):
+    def __init__(self, J=1, b=1, K=1, R=1, L=1):
+        super().__init__(J, b, K, R, L)
+        self.name = "DC Motor Position Control"
+
+    def get_transfer_function(self):
+        p = self.parameters
+        numerator = p['K']
+        denominator = s * ( (p['J']*s + p['b']) * (p['L']*s + p['R']) + p['K']**2 )
+        return numerator / denominator
+
+    def get_latex_equation(self, J=None, b=None, K=None, R=None, L=None):
+        """Return LaTeX equation for position control, using provided values or symbols if None"""
+        J_val = str(J) if J is not None else 'J'
+        b_val = str(b) if b is not None else 'b'
+        K_val = str(K) if K is not None else 'K'
+        R_val = str(R) if R is not None else 'R'
+        L_val = str(L) if L is not None else 'L'
+
+        return rf"$\frac{{{K_val}}}{{s \cdot (({J_val}s + {b_val})({L_val}s + {R_val}) + {K_val}^2)}}$"
+
+
+
+PLANT_MAP = {
+    "Ball and Beam": BallAndBeamPlant,
+    "DC Motor Speed Control": MotorSpeedPlant,
+    "DC Motor Position Control": MotorPositionPlant,
+}
+
+def get_plant(plant_type: str):
+    """Factory method to create plant by name"""
+    try:
+        return PLANT_MAP[plant_type]()
+    except KeyError:
+        raise ValueError(f"Unknown plant type: {plant_type}")
