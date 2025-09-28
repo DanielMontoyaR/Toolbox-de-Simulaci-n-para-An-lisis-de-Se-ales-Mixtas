@@ -129,11 +129,85 @@ class MotorPositionPlant(MotorSpeedPlant):
         return rf"$\frac{{{K_val}}}{{s \cdot (({J_val}s + {b_val})({L_val}s + {R_val}) + {K_val}^2)}}$"
 
 
+class PersonalizedPlant(Plant):
+    DESCRIPTIONS = {
+        'Numerator': 'Numerator: Numerator coefficients (list)',
+        'Denominator': 'Denominator: Denominator coefficients (list)'
+    }
+
+    def __init__(self, num=None, den=None):
+        if num is None:
+            num = [1]
+        if den is None:
+            den = [1]  # Default to gain 1
+        params = {'Numerator': num, 'Denominator': den}
+        super().__init__("Personalized Plant", params)
+
+    def _ensure_list(self, coeffs):
+        """Convert input to list of numbers/symbols if needed"""
+        if coeffs is None:
+            return [1]  # default to 1
+
+        # If already a list, return as is
+        if isinstance(coeffs, list):
+            return coeffs
+
+        # If single number, convert to list
+        if isinstance(coeffs, (int, float)):
+            return [coeffs]
+
+        # If string, try to parse
+        if isinstance(coeffs, str):
+            items = coeffs.split(",")
+            result = []
+            for item in items:
+                item = item.strip()
+                try:
+                    result.append(float(item))
+                except ValueError:
+                    # If not a number, treat as symbol
+                    result.append(sp.Symbol(item))
+            return result
+
+        # Fallback case (already symbolic or something else)
+        return [coeffs]
+
+
+    def get_transfer_function(self, **kwargs):
+        params = self.parameters.copy()
+        params.update(kwargs)
+
+        num_coeffs = self._ensure_list(params['Numerator'])
+        den_coeffs = self._ensure_list(params['Denominator'])
+
+        num_poly = sum(coef * s**i for i, coef in enumerate(reversed(num_coeffs)))
+        den_poly = sum(coef * s**i for i, coef in enumerate(reversed(den_coeffs)))
+
+        return num_poly / den_poly
+
+    def get_latex_equation(self, **kwargs):
+        params = self.parameters.copy()
+        params.update(kwargs)
+
+        num_coeffs = self._ensure_list(params['Numerator'])
+        den_coeffs = self._ensure_list(params['Denominator'])
+
+        num_poly = sum(coef * s**i for i, coef in enumerate(reversed(num_coeffs)))
+        den_poly = sum(coef * s**i for i, coef in enumerate(reversed(den_coeffs)))
+
+        expr = num_poly / den_poly
+        return f"${sp.latex(expr)}$"
+
+    def get_parameter_descriptions(self):
+        return self.DESCRIPTIONS
+
+
 
 PLANT_MAP = {
     "Ball and Beam": BallAndBeamPlant,
     "DC Motor Speed Control": MotorSpeedPlant,
     "DC Motor Position Control": MotorPositionPlant,
+    "Personalized Plant": PersonalizedPlant
 }
 
 def get_plant(plant_type: str):

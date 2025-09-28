@@ -10,18 +10,18 @@ from utils.input_utils import simulator_create_pixmap_equation
 class PlantEditor(QDialog):
     def __init__(self, plant_controller: Plant, parent=None):
         super().__init__(parent)
-        ui_path = os.path.join(os.path.dirname(__file__), "../ui/predefined_plant_editor.ui")
+        ui_path = os.path.join(os.path.dirname(__file__), "../ui/plant_editor.ui")
         loadUi(ui_path, self)
 
         self.plant_controller = plant_controller
 
         # Input Validators
-        validator = QDoubleValidator(-9999.0, 9999.0, 4)
-        validator.setNotation(QDoubleValidator.StandardNotation)
+        #validator = QDoubleValidator(-9999.0, 9999.0, 4)
+        #validator.setNotation(QDoubleValidator.StandardNotation)
 
-        for i in range(1, 7):  # From input 1 to 6 
-            line_edit = getattr(self, f"param{i}Input")
-            line_edit.setValidator(validator)
+        #for i in range(1, 7):  # From input 1 to 6 
+        #    line_edit = getattr(self, f"param{i}Input")
+        #    line_edit.setValidator(validator)
 
         # Button Configuration
         self.applyButton.clicked.connect(self.accept)
@@ -40,6 +40,16 @@ class PlantEditor(QDialog):
 
             info_label = getattr(self, f"param{i}LabelInfo")
             info_label.setToolTip(desc)
+
+            line_edit = getattr(self, f"param{i}Input")
+
+            if key in ("Numerator", "Denominator"):
+                line_edit.setValidator(None)  # Remove validator for polynomial inputs
+                line_edit.setPlaceholderText("e.g., 1, 0, 5 for s^2 + 5")
+            else:
+                validator = QDoubleValidator(-9999.0, 9999.0, 4)
+                validator.setNotation(QDoubleValidator.StandardNotation)
+                line_edit.setValidator(validator)
 
         # Hide unused Labels and Inputs
         for j in range(len(descriptions) + 1, 7):  
@@ -67,21 +77,30 @@ class PlantEditor(QDialog):
         params = self.plant_controller.get_parameters()
         for i, (key, value) in enumerate(params.items(), start=1):
             line_edit = getattr(self, f"param{i}Input")
-            line_edit.setText(str(value))
+
+            # If the value is a list (for polynomials), convert to comma-separated string
+            if isinstance(value, list):
+                line_edit.setText(", ".join(map(str, value)))
+            else:
+                line_edit.setText(str(value))
 
 
     def update_plant_preview(self):
-        # Tomar valores de inputs
+        # Take values from inputs
         params = {}
         for i, key in enumerate(self.plant_controller.get_parameters().keys(), start=1):
             text = getattr(self, f"param{i}Input").text()
             if text:
-                try:
-                    params[key] = float(text)
-                except ValueError:
-                    params[key] = None  # si no es convertible, mostramos símbolo
+                if key in ("Numerator", "Denominator"):
+                    params[key] = text  # keep as string for polynomial parsing
+                else:
+                    try:
+                        params[key] = float(text)
+                    except ValueError:
+                        params[key] = None  # if not convertible, set to None
 
-        # Pedir la ecuación usando los valores ingresados o None para los vacíos
+        # Ask plant controller for LaTeX equation
+        #print(params)
         latex_eq = self.plant_controller.get_latex_equation(**params)
 
         pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=10)
@@ -103,16 +122,19 @@ class PlantEditor(QDialog):
             text = input_widget.text()
 
             if text:
-                try:
-                    params[key] = float(text)
-                except ValueError:
-                    print(f"Error: Invalid value for {key}")
-                    return
+                if key in ("Numerator", "Denominator"):
+                    params[key] = text  # keep as string for polynomial parsing
+                else:
+                    try:
+                        params[key] = float(text)
+                    except ValueError:
+                        print(f"Error: Invalid value for {key}")
+                        return
 
-        #Update plant Parameters 
+        # Update plant Parameters
         self.plant_controller.set_parameters(**params)
 
-        print("Parameteres updated")
+        print("Parameters updated")
         print(self.plant_controller.get_parameters())
         print("Transfer Function")
         print(self.plant_controller.get_transfer_function())

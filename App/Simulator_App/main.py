@@ -20,8 +20,8 @@ def main():
 
 
     #Tester.run_all_tests()
-    plant_types = ["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control"]
-    mainwindow = Simulator(plant_types[2])
+    plant_types = ["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control", "Personalized Plant"]
+    mainwindow = Simulator(plant_types[3])
     mainwindow.show()
     
 
