@@ -70,7 +70,12 @@ class ControlEditor(QDialog):
 
     def apply_changes_to_model(self):
         """Update the controller_pid object with values from inputs"""
-        kp = float(self.kpInput.text() or 0)
-        ki = float(self.kiInput.text() or 0)
-        kd = float(self.kdInput.text() or 0)
+        try:
+            kp = float(self.kpInput.text() or 0)
+            ki = float(self.kiInput.text() or 0)
+            kd = float(self.kdInput.text() or 0)
+        except ValueError:
+            kp, ki, kd = 0.0, 0.0, 0.0
+            print("Invalid input; defaulting to 0.0")
+            
         self.controller_pid.set_parameters(kp, ki, kd)

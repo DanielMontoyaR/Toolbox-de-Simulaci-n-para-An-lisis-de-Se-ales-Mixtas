@@ -44,15 +44,17 @@ class Simulator(QMainWindow):
 
         #Create models
         self.controller_pid = ControllerPID()
-        
-
         self.plant_controller = get_plant(plant_type)
 
         print("plant Type:", self.plant_controller.name)
 
+
+    #--------------- Input Label Methods ---------------
     def on_input_label_clicked(self):
         print("Input label clicked")
         self.inputLabel.setText("Input Clicked!")
+
+    #--------------- End Input Label Methods ---------------
 
     #--------------- Control Label Methods ---------------
 
@@ -75,7 +77,10 @@ class Simulator(QMainWindow):
         Kd = params["kd"]
 
         # Create LaTeX equation
-        latex_eq = r"C(s) = $%s + \frac{%s}{s} + %s\,s$" % (Kp, Ki, Kd)
+        #latex_eq = r"C(s) = $%s + \frac{%s}{s} + %s\,s$" % (Kp, Ki, Kd)
+
+        #Get LaTex equation from model
+        latex_eq = self.controller_pid.get_latex_equation(Kp, Ki, Kd)
 
         # Generate pixmap from LaTeX equation
         pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=20, dpi=200)
@@ -96,12 +101,22 @@ class Simulator(QMainWindow):
         if result == QDialog.Accepted:
             # Apply changes to the model
             print("Accepted")
-            dialog.apply_changes_to_model()
-            #self.update_plant_label()
+            #dialog.apply_changes_to_model()
+            self.update_plant_label()
         else:
             print("Plant configuration canceled")
 
 
+    def update_plant_label(self):
+        """Update the plantLabel with the LaTeX representation of the plant from the model."""
+        params = self.plant_controller.get_parameters()
+        latex_eq = self.plant_controller.get_latex_equation(**params)
+
+        # Generate pixmap from LaTeX equation
+        pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=30, dpi=200)
+        pixmap = pixmap.scaled(self.plantLabel.width(), self.plantLabel.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.plantLabel.setPixmap(pixmap)
     #--------------- End Plant Label Methods ---------------
 
     #--------------- Output Label Methods ---------------

@@ -1,5 +1,9 @@
 import sympy as sp
 from abc import ABC, abstractmethod
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.input_utils import must_be_nonnegative, must_be_positive, cannot_be_zero
 
 s = sp.symbols('s')
 
@@ -52,9 +56,38 @@ class BallAndBeamPlant(Plant):
 
     def get_transfer_function(self):
         p = self.parameters
-        numerator = -p['m'] * p['g'] * p['d']
-        denominator = p['L'] * (p['J'] / p['R']**2 + p['m']) * s**2
-        return numerator / denominator
+
+        error_log = ""
+
+        #Validations for parameters
+        errors = [
+            must_be_positive('Mass m', p['m']),
+            must_be_positive('Radius R', p['R']),
+            must_be_positive('Length L', p['L']),
+            must_be_positive('Gravity g', p['g']),
+            must_be_positive('Distance d', p['d']),
+            must_be_nonnegative('Moment of inertia J', p['J'])
+        ]
+        
+        try:
+            numerator = -p['m'] * p['g'] * p['d']
+            denominator = p['L'] * (p['J'] / p['R']**2 + p['m']) * s**2
+            
+            errors.append(cannot_be_zero("denominator",denominator))
+            error_log = "\n".join(e for e in errors if e)
+
+            if error_log.strip():
+                print("Errors found in transfer function calculation:")
+                return error_log
+
+            return numerator / denominator
+        except ZeroDivisionError:
+            errors.append("Error: Division by zero in transfer function calculation.")
+        except Exception as e:
+            errors.append(f"Error in transfer function calculation: {e}")
+
+        #Reach this point only if there was an exception
+        return "\n".join(e for e in errors if e)
 
     def get_latex_equation(self, m=None, R=None, d=None, g=None, L=None, J=None):
             """Return LaTeX equation, using provided values or defaults/symbols"""
@@ -89,9 +122,38 @@ class MotorSpeedPlant(Plant):
 
     def get_transfer_function(self):
         p = self.parameters
-        numerator = p['K']
-        denominator = ( (p['J']*s + p['b']) * (p['L']*s + p['R']) + p['K']**2 )
-        return numerator / denominator
+        error_log = ""
+        
+        errors = [
+            must_be_positive('Moment of inertia J', p['J']),
+            must_be_nonnegative('Motor viscous friction constant b', p['b']),
+            must_be_nonnegative('Electromotive force constant K', p['K']),
+            must_be_nonnegative('Electric resistance R', p['R']),
+            must_be_nonnegative('Electric inductance L', p['L'])
+        ]
+        
+
+        try:
+            numerator = p['K']
+            denominator = ( (p['J']*s + p['b']) * (p['L']*s + p['R']) + p['K']**2 )
+            
+            errors.append(cannot_be_zero("denominator",denominator))
+
+            
+
+            if error_log.strip():
+                print("Errors found in transfer function calculation:")
+                error_log = "\n".join(e for e in errors if e)
+                return error_log
+
+            return numerator / denominator
+        except ZeroDivisionError:
+            errors.append("Error: Division by zero in transfer function calculation.")
+        except Exception as e:
+            errors.append(f"Error in transfer function calculation: {e}")
+
+        #Reach this point only if there was an exception
+        return "\n".join(e for e in errors if e)
 
     def get_latex_equation(self, J=None, b=None, K=None, R=None, L=None):
         """Return LaTeX equation, using provided values or symbols if None"""
@@ -114,9 +176,38 @@ class MotorPositionPlant(MotorSpeedPlant):
 
     def get_transfer_function(self):
         p = self.parameters
-        numerator = p['K']
-        denominator = s * ( (p['J']*s + p['b']) * (p['L']*s + p['R']) + p['K']**2 )
-        return numerator / denominator
+
+        error_log = ""
+
+        errors = [
+            must_be_positive('Moment of inertia J', p['J']),
+            must_be_nonnegative('Motor viscous friction constant b', p['b']),
+            must_be_nonnegative('Electromotive force constant K', p['K']),
+            must_be_nonnegative('Electric resistance R', p['R']),
+            must_be_nonnegative('Electric inductance L', p['L'])
+        ]
+
+        try:
+            numerator = p['K']
+            denominator = s * ( (p['J']*s + p['b']) * (p['L']*s + p['R']) + p['K']**2 )
+
+            errors.append(cannot_be_zero("denominator",denominator))
+
+            error_log = "\n".join(e for e in errors if e)
+
+            if error_log.strip():
+                print("Errors found in transfer function calculation:")
+                return error_log
+            
+            return numerator / denominator
+        except ZeroDivisionError:
+            errors.append("Error: Division by zero in transfer function calculation.")
+        except Exception as e:
+            errors.append(f"Error in transfer function calculation: {e}")
+
+        #Reach this point only if there was an exception
+        return "\n".join(e for e in errors if e)
+        
 
     def get_latex_equation(self, J=None, b=None, K=None, R=None, L=None):
         """Return LaTeX equation for position control, using provided values or symbols if None"""
@@ -216,3 +307,4 @@ def get_plant(plant_type: str):
         return PLANT_MAP[plant_type]()
     except KeyError:
         raise ValueError(f"Unknown plant type: {plant_type}")
+    

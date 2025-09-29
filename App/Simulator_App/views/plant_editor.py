@@ -15,16 +15,11 @@ class PlantEditor(QDialog):
 
         self.plant_controller = plant_controller
 
-        # Input Validators
-        #validator = QDoubleValidator(-9999.0, 9999.0, 4)
-        #validator.setNotation(QDoubleValidator.StandardNotation)
-
-        #for i in range(1, 7):  # From input 1 to 6 
-        #    line_edit = getattr(self, f"param{i}Input")
-        #    line_edit.setValidator(validator)
+        self.errorLabel.hide()
+        self.errorLabelInfo.hide()
 
         # Button Configuration
-        self.applyButton.clicked.connect(self.accept)
+        self.applyButton.clicked.connect(self.apply_changes_to_model)
         self.cancelButton.clicked.connect(self.reject)
 
         #Plant label configuration
@@ -131,10 +126,25 @@ class PlantEditor(QDialog):
                         print(f"Error: Invalid value for {key}")
                         return
 
-        # Update plant Parameters
-        self.plant_controller.set_parameters(**params)
+        # Save old parameters for comparison
+        old_params = self.plant_controller.get_parameters().copy()
 
-        print("Parameters updated")
-        print(self.plant_controller.get_parameters())
-        print("Transfer Function")
-        print(self.plant_controller.get_transfer_function())
+        #Try to update parameters in the model
+        self.plant_controller.set_parameters(**params)
+        tf = self.plant_controller.get_transfer_function()
+
+        if isinstance(tf, str):  # An error message was returned
+
+            self.plant_controller.set_parameters(**old_params) #Revert to old parameters
+            self.errorLabel.show()
+            self.errorLabelInfo.show()
+            self.errorLabelInfo.setToolTip(tf) # Show error message as tooltip
+            return
+        else:
+            self.errorLabel.hide()
+            self.errorLabelInfo.hide()
+            print("Parameters updated")
+            print(self.plant_controller.get_parameters())
+            print("Transfer Function")
+            print(self.plant_controller.get_transfer_function())
+            self.accept()  # Close dialog with Accepted status
