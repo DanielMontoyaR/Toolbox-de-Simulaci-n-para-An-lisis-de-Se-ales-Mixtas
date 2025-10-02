@@ -25,10 +25,18 @@ class ControllerPID:
         self.Kd = Kd
 
     def get_parameters(self):
-        return {"kp": self.Kp, "ki": self.Ki, "kd": self.Kd}
+        return {
+            "kp": self.Kp, 
+            "ki": self.Ki, 
+            "kd": self.Kd
+        }
     
     def get_descriptions(self):
-        return {"kp": self.Kp_description, "ki": self.Ki_description, "kd": self.Kd_description}
+        return {
+            "kp": self.Kp_description, 
+            "ki": self.Ki_description, 
+            "kd": self.Kd_description
+        }
     
     def get_latex_equation(self, kp=None, ki=None, kd=None):
         """Return the LaTex equation using actual values or alternatives"""

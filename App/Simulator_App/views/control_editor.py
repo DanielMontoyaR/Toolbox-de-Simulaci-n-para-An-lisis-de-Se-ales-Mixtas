@@ -27,7 +27,7 @@ class ControlEditor(QDialog):
         self.pidLabel.setAlignment(Qt.AlignCenter)
 
         # Button Configuration
-        self.applyButton.clicked.connect(self.accept)
+        self.applyButton.clicked.connect(self.apply_changes_to_model)
         self.cancelButton.clicked.connect(self.reject)
 
         # Real-time connection of inputs to labels
@@ -79,3 +79,4 @@ class ControlEditor(QDialog):
             print("Invalid input; defaulting to 0.0")
             
         self.controller_pid.set_parameters(kp, ki, kd)
+        self.accept()

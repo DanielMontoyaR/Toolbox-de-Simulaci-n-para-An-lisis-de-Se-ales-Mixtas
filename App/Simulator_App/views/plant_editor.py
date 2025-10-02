@@ -15,6 +15,7 @@ class PlantEditor(QDialog):
 
         self.plant_controller = plant_controller
 
+        self.setWindowTitle(plant_controller.name + " Editor")
         self.errorLabel.hide()
         self.errorLabelInfo.hide()
 
@@ -111,12 +112,13 @@ class PlantEditor(QDialog):
         """Update the plant_controller object with values from inputs"""
 
         params = {}
-
+        # Collect values from input fields
         for i, key in enumerate(self.plant_controller.get_parameters().keys(), start=1):
             input_widget = getattr(self, f"param{i}Input")
             text = input_widget.text()
-
+            # Only update if text is not empty
             if text:
+                # Check if the key is for a polynomial (personalized plant model)
                 if key in ("Numerator", "Denominator"):
                     params[key] = text  # keep as string for polynomial parsing
                 else:

@@ -5,11 +5,16 @@ from PyQt5.QtCore import Qt
 from utils.clickable_label import ClickableLabel
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QDoubleValidator
+
+
 from simulation_components.controller_pid import ControllerPID
 from simulation_components.plant import get_plant
+from simulation_components.input import Input
+
 
 from utils.input_utils import simulator_create_pixmap_equation
 from views.control_editor import ControlEditor
+from views.input_editor import InputEditor
 from views.plant_editor import *
 
 class Simulator(QMainWindow):
@@ -39,20 +44,35 @@ class Simulator(QMainWindow):
         self.outputLabel.clicked.connect(self.on_output_label_clicked)
         self.controlLabel.clicked.connect(self.on_control_label_clicked)
         self.plantLabel.clicked.connect(self.on_plant_label_clicked)
+
+        #Buttons
         self.stopButton.clicked.connect(self.on_stop_button_clicked)
         self.simulateButton.clicked.connect(self.on_simulate_button_clicked)
 
         #Create models
         self.controller_pid = ControllerPID()
         self.plant_controller = get_plant(plant_type)
+        self.input_controller = Input()
 
-        print("plant Type:", self.plant_controller.name)
+        #print("plant Type:", self.plant_controller.name)
+
+        #Disabled elements at start
+        self.outputLabel.setDisabled(True)
+        self.stopButton.setDisabled(True)
+        self.simulateButton.setDisabled(False)
 
 
     #--------------- Input Label Methods ---------------
     def on_input_label_clicked(self):
-        print("Input label clicked")
-        self.inputLabel.setText("Input Clicked!")
+        #print("Input label clicked")
+        #self.inputLabel.setText("Input Clicked!")
+        dialog = InputEditor(self.input_controller, self)
+        result = dialog.exec_()
+        if result == QDialog.Accepted:
+            print("Input configuration accepted")
+            print("Params:", self.input_controller.get_parameters())
+        else:
+            print("Input configuration canceled")
 
     #--------------- End Input Label Methods ---------------
 
@@ -64,7 +84,7 @@ class Simulator(QMainWindow):
 
         if result == QDialog.Accepted:
             # Apply changes to the model
-            dialog.apply_changes_to_model()
+            #dialog.apply_changes_to_model()
             self.update_control_label()
         else:
             print("Control configuration canceled")
@@ -75,9 +95,6 @@ class Simulator(QMainWindow):
         Kp = params["kp"]
         Ki = params["ki"]
         Kd = params["kd"]
-
-        # Create LaTeX equation
-        #latex_eq = r"C(s) = $%s + \frac{%s}{s} + %s\,s$" % (Kp, Ki, Kd)
 
         #Get LaTex equation from model
         latex_eq = self.controller_pid.get_latex_equation(Kp, Ki, Kd)
@@ -123,7 +140,7 @@ class Simulator(QMainWindow):
 
     def on_output_label_clicked(self):
         print("Output label clicked")
-        self.outputLabel.setText("Output Clicked!")
+        #self.outputLabel.setText("Output Clicked!")
     
     #--------------- End Output Label Methods ---------------
 
@@ -131,8 +148,15 @@ class Simulator(QMainWindow):
     #--------------- Stop Button Methods ---------------
 
     def on_stop_button_clicked(self):
+        self.stopButton.setDisabled(True)
+        self.simulateButton.setDisabled(False)
+        self.outputLabel.setDisabled(True)
+        self.inputLabel.setDisabled(False)
+        self.controlLabel.setDisabled(False)
+        self.plantLabel.setDisabled(False)
+        
         print("Stop button clicked")
-        self.stopButton.setText("Stopped")
+        #self.stopButton.setText("Stopped")
     
     #--------------- End Stop Button Methods ---------------
 
@@ -140,7 +164,13 @@ class Simulator(QMainWindow):
     #--------------- Simulate Button Methods ---------------
 
     def on_simulate_button_clicked(self):
+        self.stopButton.setDisabled(False)
+        self.simulateButton.setDisabled(True)
+        self.outputLabel.setDisabled(False)
+        self.inputLabel.setDisabled(True)
+        self.controlLabel.setDisabled(True)
+        self.plantLabel.setDisabled(True)
         print("Simulate button clicked")
-        self.simulateButton.setText("Simulating...")
+        #self.simulateButton.setText("Simulating...")
 
     #--------------- End Simulate Button Methods ---------------
