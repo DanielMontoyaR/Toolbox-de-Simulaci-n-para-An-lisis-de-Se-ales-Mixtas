@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
+from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import QRegExp, QLocale
 from simulation_components.plant import Plant
 from utils.input_utils import simulator_create_pixmap_equation
 
@@ -40,13 +42,20 @@ class PlantEditor(QDialog):
             line_edit = getattr(self, f"param{i}Input")
 
             if key in ("Numerator", "Denominator"):
-                line_edit.setValidator(None)  # Remove validator for polynomial inputs
+                #print("Setting regex validator for polynomial input")
+
+                # Only allow numbers, commas, spaces, and periods
+                regex = QRegExp(r"[0-9.,\s]*")
+                validator = QRegExpValidator(regex)
+
+                
                 line_edit.setPlaceholderText("e.g., 1, 0, 5 for s^2 + 5")
             else:
-                validator = QDoubleValidator(-9999.0, 9999.0, 4)
-                validator.setNotation(QDoubleValidator.StandardNotation)
-                line_edit.setValidator(validator)
+                # Only allow numbers (including negative and decimal)
+                regex = QRegExp(r"^-?\d+(\.\d{1,4})?$")  
+                validator = QRegExpValidator(regex)
 
+            line_edit.setValidator(validator)
         # Hide unused Labels and Inputs
         for j in range(len(descriptions) + 1, 7):  
             getattr(self, f"param{j}Label").hide()

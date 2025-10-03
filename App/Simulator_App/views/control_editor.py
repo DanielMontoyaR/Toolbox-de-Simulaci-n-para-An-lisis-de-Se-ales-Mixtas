@@ -6,7 +6,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
 from simulation_components.controller_pid import ControllerPID
 from utils.input_utils import simulator_create_pixmap_equation
-
+from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import QRegExp
 class ControlEditor(QDialog):
     def __init__(self, controller_pid: ControllerPID, parent=None):
         super().__init__(parent)
@@ -17,8 +18,8 @@ class ControlEditor(QDialog):
         self.controller_pid = controller_pid
 
         # Input Validators
-        validator = QDoubleValidator(-9999.0, 9999.0, 4)
-        validator.setNotation(QDoubleValidator.StandardNotation)
+        regex = QRegExp(r"^-?\d+(\.\d{1,4})?$")  
+        validator = QRegExpValidator(regex)
         self.kpInput.setValidator(validator)
         self.kiInput.setValidator(validator)
         self.kdInput.setValidator(validator)

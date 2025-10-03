@@ -4,6 +4,8 @@ from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
 from simulation_components.input import Input
+from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import QRegExp
 
 
 
@@ -17,8 +19,8 @@ class InputEditor(QDialog):
         self.input_controller = input_controller
 
         # Input Validators
-        validator = QDoubleValidator(-9999.0, 9999.0, 4)
-        validator.setNotation(QDoubleValidator.StandardNotation)
+        regex = QRegExp(r"^-?\d+(\.\d{1,4})?$")  
+        validator = QRegExpValidator(regex)
         self.stepTimeInput.setValidator(validator)
         self.initialValueInput.setValidator(validator)
         self.finalValueInput.setValidator(validator)

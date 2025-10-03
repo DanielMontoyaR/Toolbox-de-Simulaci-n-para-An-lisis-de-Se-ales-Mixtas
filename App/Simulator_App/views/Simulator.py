@@ -15,7 +15,8 @@ from simulation_components.input import Input
 from utils.input_utils import simulator_create_pixmap_equation
 from views.control_editor import ControlEditor
 from views.input_editor import InputEditor
-from views.plant_editor import *
+from views.plant_editor import PlantEditor
+from views.output_plotter import OutputPlotter
 
 class Simulator(QMainWindow):
     def __init__(self, plant_type):
@@ -140,6 +141,11 @@ class Simulator(QMainWindow):
 
     def on_output_label_clicked(self):
         print("Output label clicked")
+        dialog = OutputPlotter(self.plant_controller, self.controller_pid, self.input_controller, self)
+        result = dialog.exec_() 
+
+
+
         #self.outputLabel.setText("Output Clicked!")
     
     #--------------- End Output Label Methods ---------------

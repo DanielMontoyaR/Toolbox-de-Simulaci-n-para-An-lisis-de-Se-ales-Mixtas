@@ -32,7 +32,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="comboBox"/>
+           <widget class="QComboBox" name="plotTypecomboBox"/>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="kpLabel">
@@ -69,17 +69,17 @@
         <item row="0" column="1">
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
-           <widget class="QLabel" name="kpLabel_2">
+           <widget class="QLabel" name="inputValueLabel">
             <property name="text">
              <string>Input Value</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="kpInput_2"/>
+           <widget class="QLineEdit" name="inputValueInput"/>
           </item>
           <item row="1" column="0" colspan="2">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="plotButton">
             <property name="text">
              <string>Plot</string>
             </property>
@@ -124,7 +124,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="titleLabel">
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Plant Plotter&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>

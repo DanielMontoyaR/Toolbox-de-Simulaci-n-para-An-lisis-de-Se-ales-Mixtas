@@ -253,6 +253,8 @@ class PersonalizedPlant(Plant):
             result = []
             for item in items:
                 item = item.strip()
+                if item == "": # Skip empty items
+                    continue
                 try:
                     result.append(float(item))
                 except ValueError:
@@ -268,13 +270,36 @@ class PersonalizedPlant(Plant):
         params = self.parameters.copy()
         params.update(kwargs)
 
+        error_log = ""
+
         num_coeffs = self._ensure_list(params['Numerator'])
         den_coeffs = self._ensure_list(params['Denominator'])
-
         num_poly = sum(coef * s**i for i, coef in enumerate(reversed(num_coeffs)))
         den_poly = sum(coef * s**i for i, coef in enumerate(reversed(den_coeffs)))
 
-        return num_poly / den_poly
+        errors = [
+            cannot_be_zero('Denominator', den_poly)
+        ]
+
+
+
+
+        try:
+            error_log = "\n".join(e for e in errors if e)
+
+            if error_log.strip():
+                print("Errors found in transfer function calculation:")
+                return error_log
+
+            return num_poly / den_poly
+        
+        except ZeroDivisionError:
+            errors.append("Error: Division by zero in transfer function calculation.")
+        except Exception as e:
+            errors.append(f"Error in transfer function calculation: {e}")
+
+        #Reach this point only if there was an exception
+        return "\n".join(e for e in errors if e)
 
     def get_latex_equation(self, **kwargs):
         params = self.parameters.copy()
