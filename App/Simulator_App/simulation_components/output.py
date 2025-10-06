@@ -1,5 +1,7 @@
 
-
+import control as ctrl
+import numpy as np
+import matplotlib.pyplot as plt
 class Output:
     def __init__(self, pid_function=None, plant_function=None, input_params=None):
         self.pid_function = pid_function
@@ -43,9 +45,42 @@ class Output:
         else:
             print("Unknown plot type")
 
+    def get_closed_loop_transfer_function(self):
+        """Calculate the closed-loop transfer function: plant*pid / (1 + plant*pid)"""
+
+        try:
+            pid_tf = self.get_pid_function().get_transfer_function()
+            plant_tf = self.get_plant_function().get_transfer_function()
+
+            open_loop = ctrl.series(plant_tf, pid_tf)
+            closed_loop = ctrl.feedback(open_loop, 1)
+
+            return closed_loop
+        except Exception as e:
+            print(f"Error in calculating closed-loop transfer function: {e}")
+            return None
+
+
 
     def plot_step_response(self):
         print("Plotting step response...")
+        print("Params:", 
+              "PID Function:", self.pid_function.get_transfer_function(), 
+              "\n\n\n\n\n\nPlant Function:", self.plant_function.get_transfer_function())
+    
+        closed_loop_tf = self.get_closed_loop_transfer_function()
+        print("Closed-loop TF:", closed_loop_tf)
+
+        time, response = ctrl.step_response(closed_loop_tf)
+        
+        # Graficar manualmente
+        plt.figure()
+        plt.plot(time, response)
+        plt.xlabel('Tiempo (s)')
+        plt.ylabel('Respuesta')
+        plt.title('Respuesta al Escalón - Lazo Cerrado')
+        plt.grid(True)
+        plt.show()
         pass
 
     def plot_impulse_response(self):

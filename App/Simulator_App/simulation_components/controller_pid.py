@@ -1,3 +1,4 @@
+import control as ctrl
 
 class ControllerPID:
     def __init__(self, Kp=0.0, Ki=0.0, Kd=0.0):
@@ -37,6 +38,12 @@ class ControllerPID:
             "ki": self.Ki_description, 
             "kd": self.Kd_description
         }
+    
+    def get_transfer_function(self):
+        """Return the PID controller transfer function: Kp + Ki/s + Kd*s"""
+        s = ctrl.TransferFunction.s
+        pid_tf = self.Kp + self.Ki / s + self.Kd * s
+        return pid_tf
     
     def get_latex_equation(self, kp=None, ki=None, kd=None):
         """Return the LaTex equation using actual values or alternatives"""

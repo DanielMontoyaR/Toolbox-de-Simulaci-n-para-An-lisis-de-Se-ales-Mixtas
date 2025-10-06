@@ -1,12 +1,13 @@
 import sympy as sp
 from abc import ABC, abstractmethod
 import sys
+import control as ctrl
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from utils.input_utils import must_be_nonnegative, must_be_positive, cannot_be_zero
+from utils.input_utils import must_be_nonnegative, must_be_positive, cannot_be_zero, must_be_negative
 
-s = sp.symbols('s')
-
+#s = sp.symbols('s')
+s = ctrl.TransferFunction.s
 
 class Plant(ABC):
     """Abstract base class for all plants."""
@@ -64,7 +65,7 @@ class BallAndBeamPlant(Plant):
             must_be_positive('Mass m', p['m']),
             must_be_positive('Radius R', p['R']),
             must_be_positive('Length L', p['L']),
-            must_be_positive('Gravity g', p['g']),
+            must_be_negative('Gravity g', p['g']),
             must_be_positive('Distance d', p['d']),
             must_be_nonnegative('Moment of inertia J', p['J'])
         ]

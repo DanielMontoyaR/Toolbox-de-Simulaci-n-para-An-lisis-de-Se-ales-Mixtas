@@ -105,3 +105,18 @@ def cannot_be_zero(name, value):
     else:
         return ""
     
+
+def must_be_negative(name, value):
+    """
+    Check if a value is strictly negative (< 0).
+    Args:
+        name (str):         Name of the variable (for error messages)
+        value (float):      Value to check
+    Returns:
+        str: An empty string if the value is valid, otherwise an error message.
+    """
+    if value >= 0:
+        #raise ValueError(f"{name} must be negative (got {value}).")
+        return f"Error: {name} must be negative (got {value})."
+    else:
+        return ""

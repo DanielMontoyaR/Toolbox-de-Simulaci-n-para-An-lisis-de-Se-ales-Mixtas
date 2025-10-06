@@ -18,7 +18,7 @@ class ControlEditor(QDialog):
         self.controller_pid = controller_pid
 
         # Input Validators
-        regex = QRegExp(r"^-?\d+(\.\d{1,4})?$")  
+        regex = QRegExp(r"^-?\d+(\.\d{1,15})?$")# Allow negative and decimal numbers up to 15 decimal places
         validator = QRegExpValidator(regex)
         self.kpInput.setValidator(validator)
         self.kiInput.setValidator(validator)

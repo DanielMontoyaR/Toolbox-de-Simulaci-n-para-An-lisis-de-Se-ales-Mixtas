@@ -52,7 +52,7 @@ class PlantEditor(QDialog):
                 line_edit.setPlaceholderText("e.g., 1, 0, 5 for s^2 + 5")
             else:
                 # Only allow numbers (including negative and decimal)
-                regex = QRegExp(r"^-?\d+(\.\d{1,4})?$")  
+                regex = QRegExp(r"^-?\d+(\.\d{1,15})?$") # Allow negative and decimal numbers up to 15 decimal places
                 validator = QRegExpValidator(regex)
 
             line_edit.setValidator(validator)
