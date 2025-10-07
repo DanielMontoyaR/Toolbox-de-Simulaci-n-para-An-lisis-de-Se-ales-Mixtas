@@ -51,7 +51,7 @@ class BallAndBeamPlant(Plant):
         'J': 'J: Moment of inertia of the beam (kg*m^2)'
     }
 
-    def __init__(self, m=1, R=1, d=1, g=9.81, L=1, J=1):
+    def __init__(self, m=1, R=1, d=1, g=-9.81, L=1, J=1):
         params = {'m': m, 'R': R, 'd': d, 'g': g, 'L': L, 'J': J}
         super().__init__("Ball and Beam", params)
 
@@ -260,7 +260,7 @@ class PersonalizedPlant(Plant):
                     result.append(float(item))
                 except ValueError:
                     # If not a number, treat as symbol
-                    result.append(sp.Symbol(item))
+                    raise ValueError(f"Invalid coefficient: {item}. Only numbers allowed.")
             return result
 
         # Fallback case (already symbolic or something else)
@@ -282,10 +282,16 @@ class PersonalizedPlant(Plant):
             cannot_be_zero('Denominator', den_poly)
         ]
 
+        # Verify denominator is not zero
+        if all(coef == 0 for coef in den_coeffs):
+            return "Error: Denominator cannot be all zeros."
 
 
 
         try:
+            #Create the transfer function using control library
+            return ctrl.TransferFunction(num_coeffs, den_coeffs)
+
             error_log = "\n".join(e for e in errors if e)
 
             if error_log.strip():
@@ -309,11 +315,48 @@ class PersonalizedPlant(Plant):
         num_coeffs = self._ensure_list(params['Numerator'])
         den_coeffs = self._ensure_list(params['Denominator'])
 
+        # Create LaTeX representation
+        num_str = self._coeffs_to_latex(num_coeffs)
+        den_str = self._coeffs_to_latex(den_coeffs)
+
+        return f"$\\frac{{{num_str}}}{{{den_str}}}$" 
+        """
         num_poly = sum(coef * s**i for i, coef in enumerate(reversed(num_coeffs)))
         den_poly = sum(coef * s**i for i, coef in enumerate(reversed(den_coeffs)))
 
+
         expr = num_poly / den_poly
         return f"${sp.latex(expr)}$"
+        """
+
+    def _coeffs_to_latex(self, coeffs):
+        """Convert coefficients to LaTeX polynomial string"""
+        if not coeffs:
+            return "0"
+        
+        terms = []
+        n = len(coeffs)
+        
+        for i, coef in enumerate(coeffs):
+            power = n - i - 1
+            
+            if coef == 0:
+                continue
+                
+            if power == 0:
+                term = f"{coef}"
+            elif power == 1:
+                term = f"{coef}s" if coef != 1 else "s"
+            else:
+                term = f"{coef}s^{{{power}}}" if coef != 1 else f"s^{{{power}}}"
+            
+            terms.append(term)
+        
+        if not terms:
+            return "0"
+            
+        return " + ".join(terms)
+
 
     def get_parameter_descriptions(self):
         return self.DESCRIPTIONS

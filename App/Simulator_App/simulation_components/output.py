@@ -29,9 +29,10 @@ class Output:
 
     #Output methods
 
-    def plot_output(self, plot_type):
+    def get_plot_data(self, plot_type):
         if plot_type == "Step Response":
-            self.plot_step_response()
+            time, response = self.plot_step_response()
+            return {"time": time, "response": response, "type": "step"}
         elif plot_type == "Impulse Response":
             self.plot_impulse_response()
         elif plot_type == "Bode Plot":
@@ -63,25 +64,28 @@ class Output:
 
 
     def plot_step_response(self):
-        print("Plotting step response...")
-        print("Params:", 
-              "PID Function:", self.pid_function.get_transfer_function(), 
-              "\n\n\n\n\n\nPlant Function:", self.plant_function.get_transfer_function())
-    
-        closed_loop_tf = self.get_closed_loop_transfer_function()
-        print("Closed-loop TF:", closed_loop_tf)
 
-        time, response = ctrl.step_response(closed_loop_tf)
+        try:
+            time_range = self.get_input_params().get_parameters()["total_time"]
+            closed_loop_tf = self.get_closed_loop_transfer_function()
+            print("Closed-loop TF:", closed_loop_tf)
+            if closed_loop_tf is None:
+                print("Closed-loop transfer function is None.")
+                return None, None
+            
+            #Calculate step response
+            input_amplitude = self.get_input_params().get_parameters()["amplitude"]
+            time, response = ctrl.step_response(input_amplitude*closed_loop_tf, T=time_range)
+            print("Step response calculated.")
+            print("Time:", time)
+            print("Response:", response)
+            return time, response
         
-        # Graficar manualmente
-        plt.figure()
-        plt.plot(time, response)
-        plt.xlabel('Tiempo (s)')
-        plt.ylabel('Respuesta')
-        plt.title('Respuesta al Escalón - Lazo Cerrado')
-        plt.grid(True)
-        plt.show()
-        pass
+        except Exception as e:
+            print(f"Error in plotting step response: {e}")
+            return None, None
+
+
 
     def plot_impulse_response(self):
         print("Plotting impulse response...")
