@@ -25,7 +25,7 @@ class InputEditor(QDialog):
         self.initialValueInput.setValidator(validator)
         self.finalValueInput.setValidator(validator)
         self.totalTimeInput.setValidator(validator)
-        self.amplitudeInput.setValidator(validator)
+        self.sampleTimeInput.setValidator(validator)
 
         # Button Configuration
         self.applyButton.clicked.connect(self.apply_changes_to_model)
@@ -36,7 +36,7 @@ class InputEditor(QDialog):
         self.initialValueLabelInfo.setToolTip(self.input_controller.get_descriptions()["initial_value"])
         self.finalValueLabelInfo.setToolTip(self.input_controller.get_descriptions()["final_value"])
         self.totalTimeLabelInfo.setToolTip(self.input_controller.get_descriptions()["total_time"])
-        self.amplitudeLabelInfo.setToolTip(self.input_controller.get_descriptions()["amplitude"])
+        self.sampleTimeLabelInfo.setToolTip(self.input_controller.get_descriptions()["sample_time"])
 
         # Load current values from the model (if any)
         self.load_from_model()
@@ -48,7 +48,7 @@ class InputEditor(QDialog):
         self.initialValueInput.setText(str(params["initial_value"]))
         self.finalValueInput.setText(str(params["final_value"]))
         self.totalTimeInput.setText(str(params["total_time"]))
-        self.amplitudeInput.setText(str(params["amplitude"]))
+        self.sampleTimeInput.setText(str(params["sample_time"]))
 
     def apply_changes_to_model(self):
         """Apply changes from input fields to the input model"""
@@ -57,12 +57,12 @@ class InputEditor(QDialog):
             initial_value = float(self.initialValueInput.text())
             final_value = float(self.finalValueInput.text())
             total_time = float(self.totalTimeInput.text())
-            amplitude = float(self.amplitudeInput.text())
+            sample_time = float(self.sampleTimeInput.text())
         except ValueError:
             # Handle invalid input (e.g., show an error message)
             print("Invalid input. Please enter valid numbers.")
             return
         
-        self.input_controller.set_parameters(step_time, initial_value, final_value, total_time, amplitude)
+        self.input_controller.set_parameters(step_time, initial_value, final_value, total_time, sample_time)
         print("Updated Input Parameters:", self.input_controller.get_parameters())
         self.accept()  # Close dialog and indicate success

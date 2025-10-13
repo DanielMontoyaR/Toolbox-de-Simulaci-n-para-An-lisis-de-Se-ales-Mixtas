@@ -195,7 +195,7 @@
     <string>Total Time</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="amplitudeInput">
+  <widget class="QLineEdit" name="sampleTimeInput">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -205,7 +205,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="amplitudeLabel">
+  <widget class="QLabel" name="sampleTimeLabel">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -215,10 +215,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>Amplitude (For step response)</string>
+    <string>Sample Time</string>
    </property>
   </widget>
-  <widget class="QLabel" name="amplitudeLabelInfo">
+  <widget class="QLabel" name="sampleTimeLabelInfo">
    <property name="geometry">
     <rect>
      <x>260</x>

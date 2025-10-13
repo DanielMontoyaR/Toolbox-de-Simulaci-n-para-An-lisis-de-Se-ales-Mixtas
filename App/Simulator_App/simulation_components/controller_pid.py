@@ -1,7 +1,7 @@
 import control as ctrl
 
 class ControllerPID:
-    def __init__(self, Kp=0.0, Ki=0.0, Kd=0.0):
+    def __init__(self, Kp=1.0, Ki=1.0, Kd=1.0):
         self.Kp = Kp  # Proportional gain
         self.Ki = Ki  # Integral gain
         self.Kd = Kd  # Derivative gain
