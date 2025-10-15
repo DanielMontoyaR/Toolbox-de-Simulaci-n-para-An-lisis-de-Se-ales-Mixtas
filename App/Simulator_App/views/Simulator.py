@@ -6,6 +6,7 @@ from utils.clickable_label import ClickableLabel
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QDoubleValidator
 
+from PyQt5.QtWidgets import QMessageBox
 
 from simulation_components.controller_pid import ControllerPID
 from simulation_components.plant import get_plant
@@ -13,13 +14,19 @@ from simulation_components.input import Input
 
 
 from utils.input_utils import simulator_create_pixmap_equation
+from utils.file_utils import save_simulation_config, extract_params_from_file, save_simulation_config_as
+
 from views.control_editor import ControlEditor
 from views.input_editor import InputEditor
 from views.plant_editor import PlantEditor
 from views.output_plotter import OutputPlotter
 
+
+import ast
+import re
+
 class Simulator(QMainWindow):
-    def __init__(self, plant_type):
+    def __init__(self, plant_type, file_path, project_type):
         super().__init__()
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/simulator.ui")
         loadUi(ui_path, self)
@@ -55,6 +62,20 @@ class Simulator(QMainWindow):
         self.plant_controller = get_plant(plant_type)
         self.input_controller = Input()
 
+        #File path
+        self.file_path = file_path
+        
+        #Project type
+        self.project_type = project_type
+
+        if self.project_type == "New Project":
+            #Quick save on new project file (to save default params of components)
+            self.on_action_save_triggered()
+        elif self.project_type == "Open Project":
+            #Load params from save file to system models.
+            self.load_params_to_models()
+            
+
         #print("plant Type:", self.plant_controller.name)
 
         #Disabled elements at start
@@ -62,6 +83,16 @@ class Simulator(QMainWindow):
         self.stopButton.setDisabled(True)
         self.simulateButton.setDisabled(False)
 
+        #Menu bar actions
+        self.actionSave.triggered.connect(self.on_action_save_triggered) 
+        self.actionSave_As.triggered.connect(self.on_action_save_as_triggered) 
+
+        self.update_window_title()
+    # Update window Title
+    def update_window_title(self):
+        """Update the window title to show the current project name."""
+        project_name = os.path.splitext(os.path.basename(self.file_path))[0]
+        self.setWindowTitle(f"Simulator - {project_name}")
 
     #--------------- Input Label Methods ---------------
     def on_input_label_clicked(self):
@@ -180,3 +211,88 @@ class Simulator(QMainWindow):
         #self.simulateButton.setText("Simulating...")
 
     #--------------- End Simulate Button Methods ---------------
+
+
+    #--------------- Action Save Methods ---------------
+    def on_action_save_triggered(self):
+        pid_params = self.controller_pid.get_parameters()
+        plant_params = self.plant_controller.get_parameters()
+        input_params = self.input_controller.get_parameters()
+        file_path = self.file_path
+
+        save_simulation_config(
+            file_path=file_path,
+            pid_params=pid_params,
+            plant_params=plant_params,
+            input_params=input_params,
+            plant_type_fallback=self.plant_controller.name
+        )
+
+
+    #--------------- End Action Save Methods ---------------
+
+
+    #--------------- Action Save As Methods --------------
+
+    def on_action_save_as_triggered(self):
+        """Handle Save As action using the separate file utility function."""
+        print("Save As triggered")
+        
+        # Get current params
+        pid_params = self.controller_pid.get_parameters()
+        plant_params = self.plant_controller.get_parameters()
+        input_params = self.input_controller.get_parameters()
+        
+        # Call function Save As
+        new_file_path = save_simulation_config_as(
+            parent_window=self,
+            current_file_path=self.file_path,
+            pid_params=pid_params,
+            plant_params=plant_params,
+            input_params=input_params,
+            plant_type_fallback=self.plant_controller.name
+        )
+        
+        # If saved successfully, update the path and title
+        if new_file_path:
+            self.file_path = new_file_path
+            self.update_window_title()
+            
+            # Display success message
+            QMessageBox.information(self, "Success", 
+                                f"Project saved as:\n{os.path.basename(new_file_path)}")
+
+    #--------------- End Action Save As Methods --------------
+
+
+
+    #--------------- Load Params Methods --------------
+
+    def load_params_to_models(self):
+        """Load PID, Plant, and Input parameters from the saved project file."""
+        # Extract parameters from file using the separate function
+        pid_params, plant_params, input_params = extract_params_from_file(self.file_path)
+
+        # Apply parameters to model controllers
+        try:
+            if pid_params:
+                self.controller_pid.set_parameters(Kp=pid_params["kp"], Ki=pid_params["ki"], Kd=pid_params["kd"])
+            if plant_params:
+                self.plant_controller.set_parameters(**plant_params)
+            if input_params:
+                self.input_controller.set_parameters(**input_params)
+        except Exception as e:
+            print(f"Error setting parameters to models: {e}")
+            return
+
+        print("Parameters successfully loaded into models.")
+        print("PID:", self.controller_pid.get_parameters())
+        print("Plant:", self.plant_controller.get_parameters())
+        print("Input:", self.input_controller.get_parameters())
+
+        self.update_control_label()
+        self.update_plant_label()
+
+    #--------------- End Load Params Methods --------------
+
+

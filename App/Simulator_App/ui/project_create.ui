@@ -25,7 +25,7 @@
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
-  <widget class="QLabel" name="nombreproyectoLabel">
+  <widget class="QLabel" name="projectNameLabel">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -39,10 +39,10 @@
 font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
    </property>
    <property name="text">
-    <string>Nombre del Proyecto:</string>
+    <string>Project Name:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="nombreproyectolineEdit">
+  <widget class="QLineEdit" name="projectNameLineEdit">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -55,7 +55,7 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
     <string notr="true">color:rgb(255, 255, 255)</string>
    </property>
   </widget>
-  <widget class="QLabel" name="rutaLabel">
+  <widget class="QLabel" name="pathLabel">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -69,10 +69,10 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
 color:rgb(255, 255, 255)</string>
    </property>
    <property name="text">
-    <string>Ruta del Proyecto</string>
+    <string>Project Path:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="rutalineEdit">
+  <widget class="QLineEdit" name="pathLineEdit">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -88,7 +88,7 @@ color:rgb(255, 255, 255)</string>
     <string notr="true">color:rgb(255, 255, 255)</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="rutaButton">
+  <widget class="QPushButton" name="pathButton">
    <property name="geometry">
     <rect>
      <x>220</x>
@@ -102,7 +102,7 @@ color:rgb(255, 255, 255)</string>
 font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
    </property>
    <property name="text">
-    <string>Seleccionar Ruta</string>
+    <string>Browse</string>
    </property>
   </widget>
   <widget class="QLabel" name="plantaLabel">
@@ -119,10 +119,10 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
 color:rgb(255, 255, 255)</string>
    </property>
    <property name="text">
-    <string>Tipo de Planta:</string>
+    <string>Plant Type</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="plantacomboBox">
+  <widget class="QComboBox" name="plantComboBox">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -161,7 +161,7 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
     </property>
    </item>
   </widget>
-  <widget class="QLabel" name="crearproyectoerrorLabel">
+  <widget class="QLabel" name="createProjectErrorLabel">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -177,7 +177,7 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="cancelarButton">
+  <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -191,10 +191,10 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
 font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
    </property>
    <property name="text">
-    <string>Cancelar</string>
+    <string>Cancel</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="crearButton">
+  <widget class="QPushButton" name="createButton">
    <property name="geometry">
     <rect>
      <x>190</x>
@@ -208,7 +208,7 @@ font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
 font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
    </property>
    <property name="text">
-    <string>Crear</string>
+    <string>Create</string>
    </property>
   </widget>
  </widget>

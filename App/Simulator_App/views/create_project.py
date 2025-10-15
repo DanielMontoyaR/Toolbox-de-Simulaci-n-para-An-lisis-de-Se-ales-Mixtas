@@ -12,11 +12,11 @@ class CreateProject(QDialog):
         loadUi(ui_path, self)
 
         self.stacked_widget = stacked_widget  # Store the stacked widget reference
-        self.crearButton.clicked.connect(self.create_project)
-        self.cancelarButton.clicked.connect(self.go_back)
-        self.rutaButton.clicked.connect(self.browse_path)
-        self.plantacomboBox.clear()
-        self.plantacomboBox.addItems(["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control"])
+        self.createButton.clicked.connect(self.create_project)
+        self.cancelButton.clicked.connect(self.go_back)
+        self.pathButton.clicked.connect(self.browse_path)
+        self.plantComboBox.clear()
+        self.plantComboBox.addItems(["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control", "Personalized Plant"])
         self.stacked_widget.resize(self.size())
 
 
@@ -24,42 +24,47 @@ class CreateProject(QDialog):
         from PyQt5.QtWidgets import QFileDialog
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
-            self.rutalineEdit.setText(directory)
+            self.pathLineEdit.setText(directory)
 
     def create_project(self):
         #print("Project creation initiated")
         #print(self.nombreproyectolineEdit.text())
 
         validation_result = create_project_validate_inputs(
-            self.rutalineEdit.text(),
-            self.nombreproyectolineEdit.text()
+            self.pathLineEdit.text(),
+            self.projectNameLineEdit.text()
         )
         if validation_result == "EMPTY_NAME":
-            self.crearproyectoerrorLabel.setText("Error: The project name cannot be empty.")
+            self.createProjectErrorLabel.setText("Error: The project name cannot be empty.")
             return
         elif validation_result == "EMPTY_PATH":
-            self.crearproyectoerrorLabel.setText("Error: The file path cannot be empty.")
+            self.createProjectErrorLabel.setText("Error: The file path cannot be empty.")
             return
         elif validation_result == "DUPLICATE":
-            self.crearproyectoerrorLabel.setText("Error: A project with the same name already exists in the specified path.")
+            self.createProjectErrorLabel.setText("Error: A project with the same name already exists in the specified path.")
             return
         elif validation_result == "INVALID_PATH":
-            self.crearproyectoerrorLabel.setText("Error: The specified file path is not a valid directory.")
+            self.createProjectErrorLabel.setText("Error: The specified file path is not a valid directory.")
             return
         else:
-            self.crearproyectoerrorLabel.setText("")
-            create_project_file(
-                self.nombreproyectolineEdit.text(),
-                self.plantacomboBox.currentText(),
-                self.rutalineEdit.text(),
-                self
+            self.createProjectErrorLabel.setText("")
+            file_path = create_project_file(
+                self.projectNameLineEdit.text(),
+                self.plantComboBox.currentText(),
+                self.pathLineEdit.text(),
+                {},  # Empty PID parameters
+                {},  # Empty Plant parameters
+                {},  # Empty Input parameters
+                self  # parent
             )
             """
             simulator = Simulator(self.stacked_widget)
             self.stacked_widget.addWidget(simulator)
             self.stacked_widget.setCurrentWidget(simulator)"""
 
-            self.simulator = Simulator(None)
+            project_type = "New Project"
+
+            self.simulator = Simulator(self.plantComboBox.currentText(), file_path, project_type)
             self.simulator.show()
             self.stacked_widget.close()
 

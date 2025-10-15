@@ -1,8 +1,10 @@
 import os
+import re
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
-from utils.file_utils import get_project_file
+from utils.file_utils import get_project_file, validate_project_file
 from views.create_project import CreateProject
+from views.simulator import Simulator
 
 class Start(QDialog):
     def __init__(self, stacked_widget):
@@ -30,11 +32,28 @@ class Start(QDialog):
         else:
             self.openerrorLabel.setText("")
 
+        # validate the structure before proceeding
+
+        valid, error_message = validate_project_file(file_path)
+
+        if not valid:
+            self.openerrorLabel.setText(f"Error: {error_message}")
+            print(f"Error: {error_message}")
+            return
+        
+        #Continue loading if the structure is valid.
         with open(file_path, "r") as file:
             content = file.read()
             print(f"Content:\n{content}")
+
+            match = re.search(r"Plant type:\s*(.+)", content)
+            plant_type = match.group(1).strip() if match else "Unknown"
+
             # Change window to Simulator
-        pass
+            project_type = "Open Project"
+            self.simulator = Simulator(plant_type, file_path, project_type)
+            self.simulator.show()
+            self.stacked_widget.close()
 
     def create_project(self):
         createProject = CreateProject(self.stacked_widget)

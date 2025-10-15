@@ -44,8 +44,8 @@ class PlantEditor(QDialog):
             if key in ("Numerator", "Denominator"):
                 #print("Setting regex validator for polynomial input")
 
-                # Only allow numbers, commas, spaces, and periods
-                regex = QRegExp(r"[0-9.,\s]*")
+                # Only allow numbers, commas, and periods
+                regex = QRegExp(r"^-?\d{1,6}(\.\d{1,15})?(,-?\d{1,6}(\.\d{1,15})?)*$")
                 validator = QRegExpValidator(regex)
 
                 

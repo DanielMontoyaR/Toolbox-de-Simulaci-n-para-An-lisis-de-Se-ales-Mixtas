@@ -7,6 +7,8 @@ from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtCore import QRegExp
 from PyQt5 import QtWidgets
 
+import control as ctrl
+
 import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -127,16 +129,22 @@ class OutputPlotter(QDialog):
 
             if plot_type == "Step Response" and plot_data["time"] is not None:
                 self.plot_step_response(plot_data)
+
             elif plot_type == "Impulse Response" and plot_data["time"] is not None:
                 self.plot_impulse_response(plot_data)
+            
             elif plot_type == "Bode Plot" and plot_data["magnitude"] is not None:
                 self.plot_bode(plot_data)
-            elif plot_type == "Nyquist Plot" and plot_data["real"] is not None:
+            
+            elif plot_type == "Nyquist Plot":
                 self.plot_nyquist(plot_data)
-            elif plot_type == "Root Locus" and plot_data["real"] is not None:
+            
+            elif plot_type == "Root Locus":
                 self.plot_root_locus(plot_data)
+            
             elif plot_type == "Real Time Response" and plot_data["time"] is not None:
                 self.plot_real_time_response(plot_data)
+            
             else:
                 print("No valid data to plot.")
                 return
@@ -150,6 +158,8 @@ class OutputPlotter(QDialog):
 
     def plot_step_response(self, plot_data):
         """Plot step response data."""
+
+        # Clear plots
         self.canvas.figure.clear()
         self.canvas.axes = self.canvas.figure.add_subplot(111)
 
@@ -182,6 +192,7 @@ class OutputPlotter(QDialog):
     def plot_impulse_response(self, plot_data):
         """Plot impulse response data"""
 
+        # Clear plots
         self.canvas.figure.clear()
         self.canvas.axes = self.canvas.figure.add_subplot(111)
 
@@ -211,6 +222,7 @@ class OutputPlotter(QDialog):
     def plot_bode(self, plot_data):
         """Plot Bode diagram."""
 
+        # Clear plots
         self.canvas.figure.clear()
         self.canvas.axes = self.canvas.figure.add_subplot(111)
 
@@ -240,7 +252,204 @@ class OutputPlotter(QDialog):
         
         self.canvas.figure.tight_layout()
 
-    def on_plot_type_changed(self, index):
+
+
+
+    def plot_nyquist(self, plot_data):
+        """Plot Nyquist diagram with all the features from control.nyquist_plot()"""
+        # Clear plots
+        self.canvas.figure.clear()
+        self.canvas.axes = self.canvas.figure.add_subplot(111)
+        try:
+            real = plot_data["real"]
+            imag = plot_data["imag"]
+            omega = plot_data.get("omega", None)
+            
+            if real is None or imag is None:
+                print("No Nyquist data available")
+                return
+
+            kp = self.pid_controller.get_parameters()["kp"]
+            ki = self.pid_controller.get_parameters()["ki"]
+            kd = self.pid_controller.get_parameters()["kd"]
+
+            
+
+            # Plot main Nyquist curve (parte positiva de frecuencia)
+            self.canvas.axes.plot(real, imag, 'b-', linewidth=2, label='Nyquist')
+            
+            # Plot reflected curve (parte negativa de frecuencia - simetría)
+            self.canvas.axes.plot(real, -np.array(imag), 'b--', linewidth=1.5, alpha=0.7, label='Reflected')
+            
+            # Add direction arrows (every ~10% of the data points)
+            if len(real) > 10 and omega is not None:
+                # Select points for arrows (skip first and last few points)
+                arrow_indices = np.linspace(2, len(real)-3, 6, dtype=int)
+                
+                for i in arrow_indices:
+                    if i < len(real) - 1:
+                        # Calculate direction vector
+                        dx = real[i+1] - real[i]
+                        dy = imag[i+1] - imag[i]
+                        
+                        # Normalize arrow length
+                        length = np.sqrt(dx**2 + dy**2)
+                        if length > 0:
+                            dx = dx / length * 0.1 * max(np.abs(real))
+                            dy = dy / length * 0.1 * max(np.abs(imag))
+                        
+                        # Add arrow
+                        self.canvas.axes.arrow(real[i], imag[i], dx, dy, 
+                                            head_width=0.05, head_length=0.1, 
+                                            fc='red', ec='red', alpha=0.8)
+
+            # Mark critical point (-1, 0j)
+            self.canvas.axes.plot(-1, 0, 'ro', markersize=8, markerfacecolor='red', 
+                                markeredgecolor='darkred', label='Critical Point (-1, 0j)')
+            
+            # Add a circle around critical point for better visibility
+            critical_circle = matplotlib.patches.Circle((-1, 0), 0.1, color='red', fill=False, linestyle='--', alpha=0.5)
+            self.canvas.axes.add_patch(critical_circle)
+
+            # Set labels and title
+            self.canvas.axes.set_title(f'Nyquist Diagram (Kp={kp}, Ki={ki}, Kd={kd})', pad=20)
+            self.canvas.axes.set_xlabel('Real Axis')
+            self.canvas.axes.set_ylabel('Imaginary Axis')
+            self.canvas.axes.grid(True, linestyle='--', alpha=0.7)
+            
+            # Set aspect ratio to equal for proper scaling
+            self.canvas.axes.set_aspect('equal', adjustable='datalim')
+            
+            # Add legend
+            self.canvas.axes.legend(loc='upper right')
+            
+            # Auto-scale with some margin
+            all_real = np.concatenate([real, -real])
+            all_imag = np.concatenate([imag, -imag])
+            
+            x_margin = 0.1 * (np.max(all_real) - np.min(all_real))
+            y_margin = 0.1 * (np.max(all_imag) - np.min(all_imag))
+            
+            self.canvas.axes.set_xlim(np.min(all_real) - x_margin, np.max(all_real) + x_margin)
+            self.canvas.axes.set_ylim(np.min(all_imag) - y_margin, np.max(all_imag) + y_margin)
+
+            # Draw the plot
+            self.canvas.draw()
+
+            print("Enhanced Nyquist plot displayed successfully")
+
+        except Exception as e:
+            print(f"Error displaying enhanced Nyquist data: {e}")
+
+
+
+
+
+
+    def plot_root_locus(self, plot_data):
+        """Plot Root Locus diagram using control's built-in function
+        
+        Args:
+            plot_data (dict): Plot data from Output class (not used in this approach)
+        """
+        try:
+            kp = self.pid_controller.get_parameters()["kp"]
+            ki = self.pid_controller.get_parameters()["ki"]
+            kd = self.pid_controller.get_parameters()["kd"]
+            
+            open_loop_tf = self.output.get_open_loop_transfer_function()
+            
+            # Clear the canvas and create fresh axes
+            self.canvas.figure.clear()
+            self.canvas.axes = self.canvas.figure.add_subplot(111)
+            
+            # Use control.root_locus to plot directly with all its features
+            ctrl.root_locus(open_loop_tf, plot=True, grid=True, ax=self.canvas.axes)
+            
+            # Customize title and ensure consistent styling
+            self.canvas.axes.set_title(f'Root Locus (Kp={kp}, Ki={ki}, Kd={kd})', pad=20)
+            
+            # Force consistent grid style
+            self.canvas.axes.grid(True, linestyle='--', alpha=0.7)
+            
+            # Set consistent background color
+            self.canvas.axes.set_facecolor((0.95, 0.95, 0.95))
+            
+            # Reset layout to maintain consistent appearance
+            self.reset_canvas_layout()
+            
+            self.canvas.draw()
+            print("Root Locus plotted successfully using control library")
+            
+        except Exception as e:
+            print(f"Error displaying Root Locus: {e}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def reset_canvas_layout(self):
+        """Reset canvas layout to maintain consistent appearance across all plots"""
+        # Apply consistent margins for all plot types
+        self.canvas.figure.subplots_adjust(
+            left=0.15, 
+            bottom=0.15, 
+            right=0.95, 
+            top=0.90
+        )
+        
+    def display_plot_data(self, plot_data, plot_type):
+        """Display the plot data on the canvas
+        
+        Args:
+            plot_data (dict): Data to plot
+            plot_type (str): Type of plot to display
+        """
+        try:
+            self.canvas.axes.clear()
+
+            if plot_type == "Step Response" and plot_data["time"] is not None:
+                self.plot_step_response(plot_data)
+
+            elif plot_type == "Impulse Response" and plot_data["time"] is not None:
+                self.plot_impulse_response(plot_data)
+            
+            elif plot_type == "Bode Plot" and plot_data["magnitude"] is not None:
+                self.plot_bode(plot_data)
+            
+            elif plot_type == "Nyquist Plot":
+                self.plot_nyquist(plot_data)
+            
+            elif plot_type == "Root Locus":
+                self.plot_root_locus(plot_data)
+            
+            elif plot_type == "Real Time Response" and plot_data["time"] is not None:
+                self.plot_real_time_response(plot_data)
+            
+            else:
+                print("No valid data to plot.")
+                return
+        
+            # Reset layout after plotting and remove tight_layout()
+            self.reset_canvas_layout()
+            self.canvas.draw()
+            
+        except Exception as e:
+            print(f"Error displaying plot data: {e}")
+
+
+
+    def on_plot_type_changed(self):
         selected = self.plotTypecomboBox.currentText()
         if selected == "Real Time Response":
             self.kpInput.setDisabled(False)

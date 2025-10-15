@@ -30,7 +30,14 @@ class Output:
     #Output methods
 
     def get_plot_data(self, plot_type):
-
+        """Get plot data based on the specified plot type
+        
+        Args:
+            plot_type (str): Type of plot to generate
+            
+        Returns:
+            dict: Plot data in a format specific to the plot type
+        """
         if plot_type == "Step Response":
             time, response = self.plot_step_response()
             return {"time": time, "response": response, "type": "step"}
@@ -44,16 +51,19 @@ class Output:
             return {"magnitude": magnitude, "phase": phase, "frequency": omega, "type": "bode"}
         
         elif plot_type == "Nyquist Plot":
-            self.plot_nyquist()
+            nyquist_data = self.plot_nyquist()
+            return nyquist_data
         
         elif plot_type == "Root Locus":
-            self.plot_root_locus()
-        
+            root_locus_data = self.plot_root_locus()
+            return root_locus_data
+
         elif plot_type == "Real Time Response":
             self.plot_real_time_response()
-        
+
         else:
             print("Unknown plot type")
+            return None
 
     def get_closed_loop_transfer_function(self):
         """Calculate the closed-loop transfer function: plant*pid / (1 + plant*pid)"""
@@ -70,6 +80,19 @@ class Output:
             print(f"Error in calculating closed-loop transfer function: {e}")
             return None
 
+
+    def get_open_loop_transfer_function(self):
+        """Calculate the open-loop transfer function"""
+        try:
+            pid_tf = self.get_pid_function().get_transfer_function()
+            plant_tf = self.get_plant_function().get_transfer_function()
+
+            open_loop = ctrl.series(plant_tf, pid_tf)
+
+            return open_loop
+        except Exception as e:
+            print(f"Error in calculating closed-loop transfer function: {e}")
+            return None
 
 
     def plot_step_response(self):
@@ -163,12 +186,49 @@ class Output:
             return None, None, None
 
     def plot_nyquist(self):
-        print("Plotting Nyquist plot...")
-        pass
+        """Compute Nyquist plot data instead of directly plotting it"""
+        try:
+            closed_loop_tf = self.get_closed_loop_transfer_function()
+            if closed_loop_tf is None:
+                return None
+
+            # Frequency range
+            omega = np.logspace(-2, 3, 1000)
+
+            # Compute response for each frequency point
+            response = [ctrl.evalfr(closed_loop_tf, 1j * w) for w in omega]
+
+            # Extract real and imaginary parts
+            real_part = np.real(response)
+            imag_part = np.imag(response)
+
+            return {
+                "real": real_part,
+                "imag": imag_part,
+                "omega": omega,
+                "type": "nyquist"
+            }
+
+        except Exception as e:
+            print(f"Error in Nyquist calculation: {e}")
+            return None
+
 
     def plot_root_locus(self):
-        print("Plotting root locus...")
-        pass
+        """Calculate Root Locus plot data
+        
+        Returns:
+            dict: Indicator that root locus should be plotted
+        """
+        try:
+            # Just return an indicator, the actual plotting happens in output_plotter
+            return {
+                "type": "root_locus",
+                "plot_ready": True
+            }
+        except Exception as e:
+            print(f"Error in Root Locus calculation: {e}")
+            return None
 
     def plot_real_time_response(self):
         print("Plotting real-time response...")

@@ -9,20 +9,20 @@ def main():
     widget = QtWidgets.QStackedWidget()
 
     # Ventana de start
-    """
+    
     mainwindow = Start(widget)
     widget.addWidget(mainwindow)
 
-    #widget.setFixedWidth(370)
-    #widget.setFixedHeight(441)
+    widget.setFixedWidth(370)
+    widget.setFixedHeight(441)
     widget.show()
-    """
+    
 
 
     #Tester.run_all_tests()
-    plant_types = ["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control", "Personalized Plant"]
-    mainwindow = Simulator(plant_types[0])
-    mainwindow.show()
+    #plant_types = ["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control", "Personalized Plant"]
+    #mainwindow = Simulator(plant_types[0])
+    #mainwindow.show()
     
 
     sys.exit(app.exec_())
