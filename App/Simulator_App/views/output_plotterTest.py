@@ -241,18 +241,18 @@ class OutputPlotterTest(QDialog):
             num_points = int(total_time / sample_time) + 1
             t = np.linspace(0, total_time, num_points)
             
-            # Calculate impulse response (siempre empieza en t=0)
+            # Calculate impulse response (allways begins en t=0)
             _, y_impulse = ctrl.impulse_response(closed_loop_tf, T=t)
             
-            # Desplazar el impulso al step_time
-            # Crear array de respuesta desplazada
+            # Shift the impulse to step_time
+            # Create a shifted response array
             response = np.zeros_like(t)
             
-            # Encontrar el índice donde ocurre el impulso
+            # Find the index where the impulse occurs
             impulse_index = np.argmax(t >= step_time)
             
             if impulse_index < len(t):
-                # Copiar la respuesta del impulso desplazada
+                # Copy the shifted impulse response
                 remaining_points = len(t) - impulse_index
                 response[impulse_index:impulse_index + len(y_impulse)] = y_impulse[:remaining_points]
             
@@ -270,7 +270,7 @@ class OutputPlotterTest(QDialog):
             self.canvas.axes.grid(True, linestyle='--', alpha=0.7)
             self.canvas.axes.set_facecolor((0.95, 0.95, 0.95))
 
-            # Marcar el punto del impulso
+            # Mark the impulse point
             self.canvas.axes.axvline(x=step_time, color='g', linestyle='--', alpha=0.7, label=f'Impulse at {step_time}s')
             self.canvas.axes.legend()
 
