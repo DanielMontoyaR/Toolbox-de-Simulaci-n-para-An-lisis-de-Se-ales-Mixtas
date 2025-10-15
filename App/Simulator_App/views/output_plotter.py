@@ -385,19 +385,6 @@ class OutputPlotter(QDialog):
             print(f"Error displaying Root Locus: {e}")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     def reset_canvas_layout(self):
         """Reset canvas layout to maintain consistent appearance across all plots"""
         # Apply consistent margins for all plot types
@@ -408,47 +395,6 @@ class OutputPlotter(QDialog):
             top=0.90
         )
         
-    def display_plot_data(self, plot_data, plot_type):
-        """Display the plot data on the canvas
-        
-        Args:
-            plot_data (dict): Data to plot
-            plot_type (str): Type of plot to display
-        """
-        try:
-            self.canvas.axes.clear()
-
-            if plot_type == "Step Response" and plot_data["time"] is not None:
-                self.plot_step_response(plot_data)
-
-            elif plot_type == "Impulse Response" and plot_data["time"] is not None:
-                self.plot_impulse_response(plot_data)
-            
-            elif plot_type == "Bode Plot" and plot_data["magnitude"] is not None:
-                self.plot_bode(plot_data)
-            
-            elif plot_type == "Nyquist Plot":
-                self.plot_nyquist(plot_data)
-            
-            elif plot_type == "Root Locus":
-                self.plot_root_locus(plot_data)
-            
-            elif plot_type == "Real Time Response" and plot_data["time"] is not None:
-                self.plot_real_time_response(plot_data)
-            
-            else:
-                print("No valid data to plot.")
-                return
-        
-            # Reset layout after plotting and remove tight_layout()
-            self.reset_canvas_layout()
-            self.canvas.draw()
-            
-        except Exception as e:
-            print(f"Error displaying plot data: {e}")
-
-
-
     def on_plot_type_changed(self):
         selected = self.plotTypecomboBox.currentText()
         if selected == "Real Time Response":

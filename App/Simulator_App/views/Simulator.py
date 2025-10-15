@@ -20,7 +20,7 @@ from views.control_editor import ControlEditor
 from views.input_editor import InputEditor
 from views.plant_editor import PlantEditor
 from views.output_plotter import OutputPlotter
-
+from views.output_plotterTest import OutputPlotterTest
 
 import ast
 import re
@@ -172,7 +172,7 @@ class Simulator(QMainWindow):
 
     def on_output_label_clicked(self):
         print("Output label clicked")
-        dialog = OutputPlotter(self.plant_controller, self.controller_pid, self.input_controller, self)
+        dialog = OutputPlotterTest(self.plant_controller, self.controller_pid, self.input_controller, self)
         result = dialog.exec_() 
 
 
