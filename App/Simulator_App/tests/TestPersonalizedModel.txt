@@ -1,6 +1,0 @@
-Project: TestPersonalizedModel
-Plant type: Personalized Plant
-
-PID: {'kp': 1.0, 'ki': 1.0, 'kd': 1.0}
-Plant: {'Numerator': [1], 'Denominator': [1]}
-Input: {'step_time': 1, 'initial_value': 0, 'final_value': 1, 'total_time': 10, 'sample_time': 0.01}

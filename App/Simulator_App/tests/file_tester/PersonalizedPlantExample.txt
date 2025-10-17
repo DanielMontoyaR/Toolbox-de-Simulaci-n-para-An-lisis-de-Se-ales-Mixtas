@@ -1,0 +1,6 @@
+Project: PersonalizedPlantExample
+Plant type: Personalized Plant
+
+PID: {'kp': 10.0, 'ki': 0.0, 'kd': 10.0}
+Plant: {'Numerator': '0.03263', 'Denominator': '0.1554,0,0'}
+Input: {'step_time': 0.0, 'initial_value': 0.0, 'final_value': 0.25, 'total_time': 10.0, 'sample_time': 0.01}

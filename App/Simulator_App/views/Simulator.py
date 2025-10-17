@@ -21,8 +21,6 @@ from views.input_editor import InputEditor
 from views.plant_editor import PlantEditor
 from views.output_plotter import OutputPlotter
 
-import ast
-import re
 
 class Simulator(QMainWindow):
     def __init__(self, plant_type, file_path, project_type):

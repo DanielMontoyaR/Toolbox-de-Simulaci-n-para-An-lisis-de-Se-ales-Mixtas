@@ -1,0 +1,6 @@
+Project: DCMotorPositionControlExample
+Plant type: DC Motor Position Control
+
+PID: {'kp': 21.0, 'ki': 500.0, 'kd': 0.25}
+Plant: {'J': 3.2284e-06, 'b': 3.5077e-06, 'K': 0.0274, 'R': 4.0, 'L': 2.75e-06}
+Input: {'step_time': 0.0, 'initial_value': 0.0, 'final_value': 1.0, 'total_time': 0.15, 'sample_time': 0.001}

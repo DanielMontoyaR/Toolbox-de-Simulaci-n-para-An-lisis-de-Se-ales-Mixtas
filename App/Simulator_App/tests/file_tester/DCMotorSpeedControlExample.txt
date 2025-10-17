@@ -1,0 +1,6 @@
+Project: DCMotorSpeedControlExample
+Plant type: DC Motor Speed Control
+
+PID: {'kp': 100.0, 'ki': 0.0, 'kd': 0.0}
+Plant: {'J': 0.01, 'b': 0.1, 'K': 0.01, 'R': 1.0, 'L': 0.5}
+Input: {'step_time': 0.0, 'initial_value': 0.0, 'final_value': 1.0, 'total_time': 10.0, 'sample_time': 0.01}
