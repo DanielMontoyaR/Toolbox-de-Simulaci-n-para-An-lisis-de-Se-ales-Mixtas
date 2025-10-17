@@ -91,6 +91,7 @@ class PlantEditor(QDialog):
 
 
     def update_plant_preview(self):
+        """Update the plant preview label"""
         # Take values from inputs
         params = {}
         for i, key in enumerate(self.plant_controller.get_parameters().keys(), start=1):
