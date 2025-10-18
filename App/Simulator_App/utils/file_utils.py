@@ -17,7 +17,7 @@ def get_project_file(parent=None):
         return "INVALID"
     return file_path
 
-def create_project_file(project_name, plant_type, project_path, pid_params, plant_params, input_params, parent=None):
+def create_project_file(project_name, plant_type, project_path, pid_params, plant_params, input_params, sensor_params, parent=None):
     
     #print(f"Project Created: {project_name}")
     #print(f"Plant Type: {plant_type}")
@@ -30,12 +30,13 @@ def create_project_file(project_name, plant_type, project_path, pid_params, plan
         file.write(f"PID: {pid_params}\n")
         file.write(f"Plant: {plant_params}\n")
         file.write(f"Input: {input_params}\n")
+        file.write(f"Sensor: {sensor_params}\n")
     
     #print(f"Project file saved as: {project_name}.txt in path {project_path if project_path else 'current directory'}")
     
     return file_to_save
 
-def save_simulation_config(file_path, pid_params, plant_params, input_params, plant_type_fallback=None, project_name=None):
+def save_simulation_config(file_path, pid_params, plant_params, input_params, sensor_params, plant_type_fallback=None, project_name=None):
     """
     Saves the current simulator configuration to a text file.
     If the file already contains 'Project:' and 'Plant type:' lines, they are reused.
@@ -46,6 +47,7 @@ def save_simulation_config(file_path, pid_params, plant_params, input_params, pl
         pid_params (dict): PID controller parameters.
         plant_params (dict): Plant model parameters.
         input_params (dict): Input parameters.
+        sensor_params (dict): Sensor parameters.
         plant_type_fallback (str, optional): Fallback plant type if it cannot be read from the file.
         project_name (str, optional): Project name to use (for Save As). If None, extracted from file.
     """
@@ -85,6 +87,7 @@ def save_simulation_config(file_path, pid_params, plant_params, input_params, pl
             f.write(f"PID: {pid_params}\n")
             f.write(f"Plant: {plant_params}\n")
             f.write(f"Input: {input_params}\n")
+            f.write(f"Sensor: {sensor_params}\n")
 
         print(f"Configuration saved successfully at: {file_path}")
 
@@ -92,7 +95,7 @@ def save_simulation_config(file_path, pid_params, plant_params, input_params, pl
         print(f"Error saving configuration: {e}")
 
 
-def save_simulation_config_as(parent_window, current_file_path, pid_params, plant_params, input_params, plant_type_fallback=None):
+def save_simulation_config_as(parent_window, current_file_path, pid_params, plant_params, input_params, sensor_params, plant_type_fallback=None):
     """
     Handle Save As functionality with file dialog and save to new location.
     
@@ -102,6 +105,7 @@ def save_simulation_config_as(parent_window, current_file_path, pid_params, plan
         pid_params (dict): PID controller parameters
         plant_params (dict): Plant model parameters  
         input_params (dict): Input parameters
+        sensor_params (dict): Sensor parameters.
         plant_type_fallback (str, optional): Fallback plant type
         
     Returns:
@@ -139,6 +143,7 @@ def save_simulation_config_as(parent_window, current_file_path, pid_params, plan
             pid_params=pid_params,
             plant_params=plant_params,
             input_params=input_params,
+            sensor_params=sensor_params,
             plant_type_fallback=plant_type_fallback
         )
         
@@ -255,5 +260,6 @@ def extract_params_from_file(file_path):
     pid_params = extract_dict("PID:")
     plant_params = extract_dict("Plant:")
     input_params = extract_dict("Input:")
+    sensor_params = extract_dict("Sensor:")
 
-    return pid_params, plant_params, input_params
+    return pid_params, plant_params, input_params, sensor_params

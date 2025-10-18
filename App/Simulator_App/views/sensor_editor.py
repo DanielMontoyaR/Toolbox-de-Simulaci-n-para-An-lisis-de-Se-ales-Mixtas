@@ -108,7 +108,7 @@ class SensorEditor(QDialog):
         old_params = self.sensor_controller.get_parameters().copy()
 
         # Try to update parameters in the model
-        self.sensor_controller.set_coefficients(
+        self.sensor_controller.set_parameters(
             num=params.get('Numerator'), 
             den=params.get('Denominator')
         )
@@ -117,7 +117,7 @@ class SensorEditor(QDialog):
 
         if isinstance(tf, str):  # An error message was returned
             # Revert to old parameters
-            self.sensor_controller.set_coefficients(
+            self.sensor_controller.set_parameters(
                 num=old_params.get('Numerator'),
                 den=old_params.get('Denominator')
             )

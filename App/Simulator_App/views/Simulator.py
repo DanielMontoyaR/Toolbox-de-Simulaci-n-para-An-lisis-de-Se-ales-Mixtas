@@ -250,6 +250,7 @@ class Simulator(QMainWindow):
         pid_params = self.controller_pid.get_parameters()
         plant_params = self.plant_controller.get_parameters()
         input_params = self.input_controller.get_parameters()
+        sensor_params = self.sensor_controller.get_parameters()
         file_path = self.file_path
 
         save_simulation_config(
@@ -257,6 +258,7 @@ class Simulator(QMainWindow):
             pid_params=pid_params,
             plant_params=plant_params,
             input_params=input_params,
+            sensor_params=sensor_params,
             plant_type_fallback=self.plant_controller.name
         )
 
@@ -303,7 +305,7 @@ class Simulator(QMainWindow):
     def load_params_to_models(self):
         """Load PID, Plant, and Input parameters from the saved project file."""
         # Extract parameters from file using the separate function
-        pid_params, plant_params, input_params = extract_params_from_file(self.file_path)
+        pid_params, plant_params, input_params, sensor_params = extract_params_from_file(self.file_path)
 
         # Apply parameters to model controllers
         try:
@@ -313,6 +315,8 @@ class Simulator(QMainWindow):
                 self.plant_controller.set_parameters(**plant_params)
             if input_params:
                 self.input_controller.set_parameters(**input_params)
+            if sensor_params:
+                self.sensor_controller.set_parameters(num=sensor_params["Numerator"], den=sensor_params["Denominator"])
         except Exception as e:
             print(f"Error setting parameters to models: {e}")
             return
@@ -324,6 +328,7 @@ class Simulator(QMainWindow):
 
         self.update_control_label()
         self.update_plant_label()
+        self.update_sensor_label()
 
     #--------------- End Load Params Methods --------------
 

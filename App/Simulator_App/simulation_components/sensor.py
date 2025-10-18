@@ -95,7 +95,7 @@ class Sensor:
         
         return " + ".join(terms) if terms else "0"
     
-    def set_coefficients(self, num=None, den=None):
+    def set_parameters(self, num=None, den=None):
         """Update sensor coefficients"""
         if num is not None:
             self.num_coeffs = self._ensure_list(num)

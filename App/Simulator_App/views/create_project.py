@@ -55,6 +55,7 @@ class CreateProject(QDialog):
                 {},  # Empty PID parameters
                 {},  # Empty Plant parameters
                 {},  # Empty Input parameters
+                {},  # Empty Sensor parameters
                 self  # parent
             )
             """
