@@ -12,9 +12,10 @@ import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-from simulation_components.plant import Plant
-from simulation_components.controller_pid import ControllerPID
 from simulation_components.input import Input
+from simulation_components.controller_pid import ControllerPID
+from simulation_components.plant import Plant
+from simulation_components.sensor import Sensor
 from simulation_components.output import Output
 
 class MplCanvas(FigureCanvas):
@@ -26,7 +27,7 @@ class MplCanvas(FigureCanvas):
         fig.tight_layout()
 
 class OutputPlotter(QDialog):
-    def __init__(self, plant_model: Plant, pid_controller: ControllerPID, input_signal: Input, parent=None):
+    def __init__(self, plant_model: Plant, pid_controller: ControllerPID, input_signal: Input, sensor_model: Sensor, parent=None):
         super().__init__(parent)
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/output_plotter.ui")
         loadUi(ui_path, self)
@@ -35,8 +36,9 @@ class OutputPlotter(QDialog):
         self.pid_controller = pid_controller
         self.input_signal = input_signal
 
+        print("Output Initialized:", sensor_model.get_latex_equation())
         # Business Logic 
-        self.output = Output(pid_object=self.pid_controller, plant_object=self.plant_model, input_params=self.input_signal)
+        self.output = Output(pid_object=self.pid_controller, plant_object=self.plant_model, input_params=self.input_signal, sensor_object=sensor_model)
 
         # Config UI
         self.setup_ui()

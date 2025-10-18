@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1124</width>
-    <height>601</height>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,7 +91,7 @@ border-style:inset;
         <rect>
          <x>620</x>
          <y>120</y>
-         <width>161</width>
+         <width>181</width>
          <height>101</height>
         </rect>
        </property>
@@ -287,9 +287,9 @@ border-style:inset;
       <widget class="QLabel" name="controlLabel">
        <property name="geometry">
         <rect>
-         <x>310</x>
+         <x>290</x>
          <y>120</y>
-         <width>161</width>
+         <width>181</width>
          <height>101</height>
         </rect>
        </property>
@@ -310,6 +310,32 @@ border-style:inset;
         <string>C(s)</string>
        </property>
       </widget>
+      <widget class="QLabel" name="sensorLabel">
+       <property name="geometry">
+        <rect>
+         <x>450</x>
+         <y>300</y>
+         <width>181</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>161</width>
+         <height>101</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+border-color: rgb(0, 0, 0);
+border-width : 1.2px;
+border-style:inset;
+</string>
+       </property>
+       <property name="text">
+        <string>Sensor</string>
+       </property>
+      </widget>
       <zorder>line_1</zorder>
       <zorder>line_4</zorder>
       <zorder>line_3</zorder>
@@ -320,6 +346,7 @@ border-style:inset;
       <zorder>inputLabel</zorder>
       <zorder>controlLabel</zorder>
       <zorder>plantLabel</zorder>
+      <zorder>sensorLabel</zorder>
      </widget>
     </item>
    </layout>

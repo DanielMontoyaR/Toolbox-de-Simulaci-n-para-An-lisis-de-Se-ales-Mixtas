@@ -1,0 +1,6 @@
+Project: DanielPrueba1
+Plant type: Ball and Beam
+
+PID: {'kp': 10.0, 'ki': 0.0, 'kd': 10.0}
+Plant: {'m': 0.111, 'R': 0.015, 'd': 0.03, 'g': -9.8, 'L': 1.0, 'J': 9.99e-06}
+Input: {'step_time': 1.0, 'initial_value': 0.0, 'final_value': 1.0, 'total_time': 10.0, 'sample_time': 0.01}

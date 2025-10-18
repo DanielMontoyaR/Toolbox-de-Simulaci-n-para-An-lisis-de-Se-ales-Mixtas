@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QMessageBox
 from simulation_components.controller_pid import ControllerPID
 from simulation_components.plant import get_plant
 from simulation_components.input import Input
+from simulation_components.sensor import Sensor
 
 
 from utils.input_utils import simulator_create_pixmap_equation
@@ -20,6 +21,7 @@ from views.control_editor import ControlEditor
 from views.input_editor import InputEditor
 from views.plant_editor import PlantEditor
 from views.output_plotter import OutputPlotter
+from views.sensor_editor import SensorEditor
 
 
 class Simulator(QMainWindow):
@@ -33,7 +35,8 @@ class Simulator(QMainWindow):
             self.inputLabel: "inputLabel",
             self.controlLabel: "controlLabel",
             self.plantLabel: "plantLabel",
-            self.outputLabel: "outputLabel"
+            self.outputLabel: "outputLabel",
+            self.sensorLabel: "sensorLabel"
         }
         for old_label, attr_name in label_map.items():
             parent_widget = old_label.parent()
@@ -49,6 +52,7 @@ class Simulator(QMainWindow):
         self.outputLabel.clicked.connect(self.on_output_label_clicked)
         self.controlLabel.clicked.connect(self.on_control_label_clicked)
         self.plantLabel.clicked.connect(self.on_plant_label_clicked)
+        self.sensorLabel.clicked.connect(self.on_sensor_label_clicked)
 
         #Buttons
         self.stopButton.clicked.connect(self.on_stop_button_clicked)
@@ -58,6 +62,7 @@ class Simulator(QMainWindow):
         self.controller_pid = ControllerPID()
         self.plant_controller = get_plant(plant_type)
         self.input_controller = Input()
+        self.sensor_controller = Sensor()
 
         #File path
         self.file_path = file_path
@@ -159,20 +164,49 @@ class Simulator(QMainWindow):
         latex_eq = self.plant_controller.get_latex_equation(**params)
 
         # Generate pixmap from LaTeX equation
-        pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=30, dpi=200)
+        pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=50, dpi=200)
         pixmap = pixmap.scaled(self.plantLabel.width(), self.plantLabel.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         self.plantLabel.setPixmap(pixmap)
     #--------------- End Plant Label Methods ---------------
 
+    #--------------- Sensor Label Methods ---------------
+
+    def on_sensor_label_clicked(self):
+        print("Sensor label clicked")
+        dialog = SensorEditor(self.sensor_controller, self)
+        result = dialog.exec_()
+
+        if result == QDialog.Accepted:
+            # Apply changes to the model
+            print("Accepted")
+            #dialog.apply_changes_to_model()
+            self.update_sensor_label()
+        else:
+            print("Sensor configuration canceled")
+
+    def update_sensor_label(self):
+        """Update the sensorLabel with the LaTeX representation of the sensor from the model."""
+        params = self.sensor_controller.get_parameters()
+        latex_eq = self.sensor_controller.get_latex_equation(**params)
+
+        # Generate pixmap from LaTeX equation
+        pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=50, dpi=200)
+        pixmap = pixmap.scaled(self.plantLabel.width(), self.sensorLabel.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.sensorLabel.setPixmap(pixmap)
+
+    #--------------- End Sensor Label Methods ---------------
+
+
+
+
     #--------------- Output Label Methods ---------------
 
     def on_output_label_clicked(self):
         print("Output label clicked")
-        dialog = OutputPlotter(self.plant_controller, self.controller_pid, self.input_controller, self)
+        dialog = OutputPlotter(self.plant_controller, self.controller_pid, self.input_controller, self.sensor_controller, self)
         result = dialog.exec_() 
-
-
 
         #self.outputLabel.setText("Output Clicked!")
     
@@ -188,7 +222,7 @@ class Simulator(QMainWindow):
         self.inputLabel.setDisabled(False)
         self.controlLabel.setDisabled(False)
         self.plantLabel.setDisabled(False)
-        
+        self.sensorLabel.setDisabled(False)
         print("Stop button clicked")
         #self.stopButton.setText("Stopped")
     
@@ -204,6 +238,7 @@ class Simulator(QMainWindow):
         self.inputLabel.setDisabled(True)
         self.controlLabel.setDisabled(True)
         self.plantLabel.setDisabled(True)
+        self.sensorLabel.setDisabled(True)
         print("Simulate button clicked")
         #self.simulateButton.setText("Simulating...")
 
