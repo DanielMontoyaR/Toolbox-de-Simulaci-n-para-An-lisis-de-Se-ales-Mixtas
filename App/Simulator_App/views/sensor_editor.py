@@ -55,41 +55,59 @@ class SensorEditor(QDialog):
     def load_from_model(self):
         """Initialize the input fields with current controller values"""
         params = self.sensor_controller.get_parameters()
+        print("Loading sensor parameters:", params)
         
         # Convert numerator list to comma-separated string
         if 'Numerator' in params:
-            num_str = ", ".join(map(str, params['Numerator']))
+            num_list = params['Numerator']
+            # If it's a list, convert to string
+            if isinstance(num_list, list):
+                num_str = ", ".join(map(str, num_list))
+            else:
+                num_str = str(num_list)
             self.sensorNumeratorInput.setText(num_str)
         
         # Convert denominator list to comma-separated string
         if 'Denominator' in params:
-            den_str = ", ".join(map(str, params['Denominator']))
+            den_list = params['Denominator']
+            # If it's a list, convert to string
+            if isinstance(den_list, list):
+                den_str = ", ".join(map(str, den_list))
+            else:
+                den_str = str(den_list)
             self.sensorDenominatorInput.setText(den_str)
-
+            
     def update_sensor_preview(self):
         """Update the sensor preview label"""
-        # Take values from inputs
-        params = {}
+        try:
+            # Take values from inputs
+            params = {}
+            
+            num_text = self.sensorNumeratorInput.text()
+            den_text = self.sensorDenominatorInput.text()
+            
+            if num_text:
+                params['Numerator'] = num_text
+            if den_text:
+                params['Denominator'] = den_text
+            
+            # Ask sensor controller for LaTeX equation
+            latex_eq = self.sensor_controller.get_latex_equation(**params)
+            
+            pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=10)
+            pixmap = pixmap.scaled(
+                self.sensorLabel.width(),
+                self.sensorLabel.height(),
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+            self.sensorLabel.setPixmap(pixmap)
         
-        num_text = self.sensorNumeratorInput.text()
-        den_text = self.sensorDenominatorInput.text()
-        
-        if num_text:
-            params['Numerator'] = num_text
-        if den_text:
-            params['Denominator'] = den_text
-        
-        # Ask sensor controller for LaTeX equation
-        latex_eq = self.sensor_controller.get_latex_equation(**params)
-        
-        pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=10)
-        pixmap = pixmap.scaled(
-            self.sensorLabel.width(),
-            self.sensorLabel.height(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
-        )
-        self.sensorLabel.setPixmap(pixmap)
+        except Exception as e:
+            # If there's an error, show a message or leave the preview empty
+            print(f"Error updating preview: {e}")
+            # Optional: show an error message in the preview
+            self.sensorLabel.setText("Error: Invalid input")
 
     def apply_changes_to_model(self):
         """Update the sensor_controller object with values from inputs"""
@@ -107,10 +125,10 @@ class SensorEditor(QDialog):
         # Save old parameters for comparison
         old_params = self.sensor_controller.get_parameters().copy()
 
-        # Try to update parameters in the model
+        # CORREGIR: Usar los nombres correctos que espera PersonalizedPlant
         self.sensor_controller.set_parameters(
-            num=params.get('Numerator'), 
-            den=params.get('Denominator')
+            Numerator=params.get('Numerator'), 
+            Denominator=params.get('Denominator')
         )
         
         tf = self.sensor_controller.get_transfer_function()
@@ -118,8 +136,8 @@ class SensorEditor(QDialog):
         if isinstance(tf, str):  # An error message was returned
             # Revert to old parameters
             self.sensor_controller.set_parameters(
-                num=old_params.get('Numerator'),
-                den=old_params.get('Denominator')
+                Numerator=old_params.get('Numerator'),
+                Denominator=old_params.get('Denominator')
             )
             self.errorLabel.show()
             self.errorLabelInfo.show()
@@ -128,8 +146,8 @@ class SensorEditor(QDialog):
         else:
             self.errorLabel.hide()
             self.errorLabelInfo.hide()
-            #print("Sensor parameters updated")
-            #print(self.sensor_controller.get_parameters())
-            #print("Sensor Transfer Function:")
-            #print(self.sensor_controller.get_transfer_function())
+            print("Sensor parameters updated")
+            print(self.sensor_controller.get_parameters())
+            print("Sensor Transfer Function:")
+            print(self.sensor_controller.get_transfer_function())
             self.accept()  # Close dialog with Accepted status

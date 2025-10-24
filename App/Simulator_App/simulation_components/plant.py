@@ -257,7 +257,10 @@ class PersonalizedPlant(Plant):
                 if item == "": # Skip empty items
                     continue
                 try:
-                    result.append(float(item))
+                    if item == "-":
+                        result.append(-1.0)
+                    else:
+                        result.append(float(item))
                 except ValueError:
                     # If not a number, treat as symbol
                     raise ValueError(f"Invalid coefficient: {item}. Only numbers allowed.")

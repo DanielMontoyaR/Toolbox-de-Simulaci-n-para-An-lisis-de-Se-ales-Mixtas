@@ -180,6 +180,7 @@ class Simulator(QMainWindow):
         if result == QDialog.Accepted:
             # Apply changes to the model
             print("Accepted")
+            print("Sensor:", self.sensor_controller.get_parameters())
             #dialog.apply_changes_to_model()
             self.update_sensor_label()
         else:
@@ -316,7 +317,7 @@ class Simulator(QMainWindow):
             if input_params:
                 self.input_controller.set_parameters(**input_params)
             if sensor_params:
-                self.sensor_controller.set_parameters(num=sensor_params["Numerator"], den=sensor_params["Denominator"])
+                self.sensor_controller.set_parameters(Numerator=sensor_params["Numerator"], Denominator=sensor_params["Denominator"])
         except Exception as e:
             print(f"Error setting parameters to models: {e}")
             return
@@ -325,6 +326,7 @@ class Simulator(QMainWindow):
         print("PID:", self.controller_pid.get_parameters())
         print("Plant:", self.plant_controller.get_parameters())
         print("Input:", self.input_controller.get_parameters())
+        print("Sensor:", self.sensor_controller.get_parameters())
 
         self.update_control_label()
         self.update_plant_label()
