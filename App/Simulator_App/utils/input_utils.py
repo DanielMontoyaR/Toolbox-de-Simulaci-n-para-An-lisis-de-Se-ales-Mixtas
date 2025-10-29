@@ -70,7 +70,6 @@ def must_be_positive(name, value):
     """
     if value <= 0:
         #raise ValueError(f"{name} must be positive and strictly greater than 0 (got {value}).")
-        print("ERROR RADIS")
         return f"Error: {name} must be positive and strictly greater than 0 (got {value})."
     else:
         return ""

@@ -78,7 +78,7 @@ class BallAndBeamPlant(Plant):
             error_log = "\n".join(e for e in errors if e)
 
             if error_log.strip():
-                print("Errors found in transfer function calculation:")
+                #print("Errors found in transfer function calculation:")
                 return error_log
 
             return numerator / denominator
@@ -133,17 +133,15 @@ class MotorSpeedPlant(Plant):
             must_be_nonnegative('Electric inductance L', p['L'])
         ]
         
-
         try:
             numerator = p['K']
             denominator = ( (p['J']*s + p['b']) * (p['L']*s + p['R']) + p['K']**2 )
             
             errors.append(cannot_be_zero("denominator",denominator))
-
-            
+            error_log = "\n".join(e for e in errors if e)
 
             if error_log.strip():
-                print("Errors found in transfer function calculation:")
+                #print("Errors found in transfer function calculation:")
                 error_log = "\n".join(e for e in errors if e)
                 return error_log
 
@@ -197,7 +195,7 @@ class MotorPositionPlant(MotorSpeedPlant):
             error_log = "\n".join(e for e in errors if e)
 
             if error_log.strip():
-                print("Errors found in transfer function calculation:")
+                #print("Errors found in transfer function calculation:")
                 return error_log
             
             return numerator / denominator
@@ -293,15 +291,14 @@ class PersonalizedPlant(Plant):
 
         try:
             #Create the transfer function using control library
-            return ctrl.TransferFunction(num_coeffs, den_coeffs)
+            
 
             error_log = "\n".join(e for e in errors if e)
-
             if error_log.strip():
-                print("Errors found in transfer function calculation:")
+                #print("Errors found in transfer function calculation:")
                 return error_log
 
-            return num_poly / den_poly
+            return ctrl.TransferFunction(num_coeffs, den_coeffs)
         
         except ZeroDivisionError:
             errors.append("Error: Division by zero in transfer function calculation.")

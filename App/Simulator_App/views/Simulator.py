@@ -1,19 +1,19 @@
+# Standard library imports
 import os
+
+# Third party imports
 from PyQt5.QtWidgets import QDialog, QMainWindow, QSizePolicy, QVBoxLayout
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
-from utils.clickable_label import ClickableLabel
-from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QDoubleValidator
-
 from PyQt5.QtWidgets import QMessageBox
 
+# Local imports
 from simulation_components.controller_pid import ControllerPID
 from simulation_components.plant import get_plant
 from simulation_components.input import Input
 from simulation_components.sensor import Sensor
-
-
+from utils.clickable_label import ClickableLabel
 from utils.input_utils import simulator_create_pixmap_equation
 from utils.file_utils import save_simulation_config, extract_params_from_file, save_simulation_config_as
 
@@ -135,7 +135,12 @@ class Simulator(QMainWindow):
 
         # Generate pixmap from LaTeX equation
         pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=20, dpi=200)
-        pixmap = pixmap.scaled(self.controlLabel.width(), self.controlLabel.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap.scaled(
+            self.controlLabel.width(), 
+            self.controlLabel.height(), 
+            Qt.KeepAspectRatio, 
+            Qt.SmoothTransformation
+        )
 
         self.controlLabel.setPixmap(pixmap)
 
@@ -165,7 +170,12 @@ class Simulator(QMainWindow):
 
         # Generate pixmap from LaTeX equation
         pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=50, dpi=200)
-        pixmap = pixmap.scaled(self.plantLabel.width(), self.plantLabel.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap.scaled(
+            self.plantLabel.width(), 
+            self.plantLabel.height(), 
+            Qt.KeepAspectRatio, 
+            Qt.SmoothTransformation
+        )
 
         self.plantLabel.setPixmap(pixmap)
     #--------------- End Plant Label Methods ---------------
@@ -193,7 +203,12 @@ class Simulator(QMainWindow):
 
         # Generate pixmap from LaTeX equation
         pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=50, dpi=200)
-        pixmap = pixmap.scaled(self.plantLabel.width(), self.sensorLabel.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap.scaled(
+            self.plantLabel.width(),
+            self.sensorLabel.height(),
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation
+        )
 
         self.sensorLabel.setPixmap(pixmap)
 

@@ -19,11 +19,14 @@ class InputEditor(QDialog):
         self.input_controller = input_controller
 
         # Input Validators
-        regex = QRegExp(r"^-?\d+(\.\d{1,4})?$")  
+        regex = QRegExp(r"^\d+(\.\d{1,4})?$")  # Allow only non-negative decimal numbers 
         validator = QRegExpValidator(regex)
+
+        regex_initial_final = QRegExp(r"^-?\d+(\.\d{1,4})?$")  # Allow negative and decimal numbers for initial and final values
+        validator_initial_final = QRegExpValidator(regex_initial_final)
         self.stepTimeInput.setValidator(validator)
-        self.initialValueInput.setValidator(validator)
-        self.finalValueInput.setValidator(validator)
+        self.initialValueInput.setValidator(validator_initial_final)
+        self.finalValueInput.setValidator(validator_initial_final)
         self.totalTimeInput.setValidator(validator)
         self.sampleTimeInput.setValidator(validator)
 
@@ -40,6 +43,10 @@ class InputEditor(QDialog):
 
         # Load current values from the model (if any)
         self.load_from_model()
+
+        # Hide error labels initially
+        self.errorLabel.hide()
+        self.errorLabelInfo.hide()
 
     def load_from_model(self):
         """Initialize the input fields with current input values"""
@@ -63,6 +70,17 @@ class InputEditor(QDialog):
             print("Invalid input. Please enter valid numbers.")
             return
         
-        self.input_controller.set_parameters(step_time, initial_value, final_value, total_time, sample_time)
-        print("Updated Input Parameters:", self.input_controller.get_parameters())
-        self.accept()  # Close dialog and indicate success
+        old_params = self.input_controller.get_parameters()
+        response = self.input_controller.set_parameters(step_time, initial_value, final_value, total_time, sample_time)
+        if isinstance(response, str):
+            # There were errors; show them
+            self.errorLabel.show()
+            self.errorLabelInfo.show()
+            self.errorLabelInfo.setToolTip(response) # Show error message as tooltip
+            self.input_controller.set_parameters(**old_params)  # Revert to old parameters
+            return
+        else:
+            self.errorLabel.hide()
+            self.errorLabelInfo.hide()
+            print("Updated Input Parameters:", self.input_controller.get_parameters())
+            self.accept()  # Close dialog and indicate success

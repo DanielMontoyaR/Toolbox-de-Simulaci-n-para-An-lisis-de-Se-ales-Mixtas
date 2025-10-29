@@ -45,14 +45,14 @@ class PlantEditor(QDialog):
                 #print("Setting regex validator for polynomial input")
 
                 # Only allow numbers, commas, and periods
-                regex = QRegExp(r"^-?\d{1,6}(\.\d{1,15})?(,-?\d{1,6}(\.\d{1,15})?)*$")
+                regex = QRegExp(r"^(-?\d+(\.\d+)?)(,-?\d+(\.\d+)?)*$")
                 validator = QRegExpValidator(regex)
 
                 
                 line_edit.setPlaceholderText("e.g., 1, 0, 5 for s^2 + 5")
             else:
                 # Only allow numbers (including negative and decimal)
-                regex = QRegExp(r"^-?\d+(\.\d{1,15})?$") # Allow negative and decimal numbers up to 15 decimal places
+                regex = QRegExp(r"^-?\d+(\.\d*)?$") # Allow negative and decimal numbers
                 validator = QRegExpValidator(regex)
 
             line_edit.setValidator(validator)
@@ -92,31 +92,36 @@ class PlantEditor(QDialog):
 
     def update_plant_preview(self):
         """Update the plant preview label"""
-        # Take values from inputs
-        params = {}
-        for i, key in enumerate(self.plant_controller.get_parameters().keys(), start=1):
-            text = getattr(self, f"param{i}Input").text()
-            if text:
-                if key in ("Numerator", "Denominator"):
-                    params[key] = text  # keep as string for polynomial parsing
-                else:
-                    try:
-                        params[key] = float(text)
-                    except ValueError:
-                        params[key] = None  # if not convertible, set to None
+        try:
+            # Take values from inputs
+            params = {}
+            for i, key in enumerate(self.plant_controller.get_parameters().keys(), start=1):
+                text = getattr(self, f"param{i}Input").text()
+                if text:
+                    if key in ("Numerator", "Denominator"):
+                        params[key] = text  # keep as string for polynomial parsing
+                    else:
+                        try:
+                            params[key] = float(text)
+                        except ValueError:
+                            params[key] = None  # if not convertible, set to None
 
-        # Ask plant controller for LaTeX equation
-        #print(params)
-        latex_eq = self.plant_controller.get_latex_equation(**params)
+            # Ask plant controller for LaTeX equation
+            latex_eq = self.plant_controller.get_latex_equation(**params)
 
-        pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=10)
-        pixmap = pixmap.scaled(
-            self.plantLabel.width(),
-            self.plantLabel.height(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
-        )
-        self.plantLabel.setPixmap(pixmap)
+            pixmap = simulator_create_pixmap_equation(latex_eq, fontsize=10)
+            pixmap = pixmap.scaled(
+                self.plantLabel.width(),
+                self.plantLabel.height(),
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+            self.plantLabel.setPixmap(pixmap)
+        
+        except Exception as e:
+            # If there's an error, show a message or leave the preview empty
+            print(f"Error updating preview: {e}")
+            self.plantLabel.setText("Error: Invalid input")
 
     def apply_changes_to_model(self):
         """Update the plant_controller object with values from inputs"""
