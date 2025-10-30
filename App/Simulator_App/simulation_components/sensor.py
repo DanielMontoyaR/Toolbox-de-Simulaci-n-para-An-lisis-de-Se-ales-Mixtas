@@ -6,8 +6,8 @@ class Sensor(PersonalizedPlant):
     Inherits from PersonalizedPlant to utilize transfer function capabilities.
     """
     
-    def __init__(self, num=None, den=None):
-        super().__init__(num, den)
+    def __init__(self, Numerator=None, Denominator=None):
+        super().__init__(Numerator, Denominator)
         self.name = "Sensor"
         
         # Personalize descriptions for sensor parameters

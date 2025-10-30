@@ -58,14 +58,14 @@ class OutputPlotter(QDialog):
         self.plotButton.clicked.connect(self.plot_output)
 
         # Combobox configuration
-        self.plotTypecomboBox.addItems(["Step Response", "Impulse Response", "Bode Plot", "Nyquist Plot", "Root Locus", "Real Time Response"])
+        self.plotTypecomboBox.addItems(["Step Response", "Impulse Response", "Bode Plot", "Nyquist Plot", "Root Locus"])
         self.plotTypecomboBox.setCurrentIndex(0)
-        self.plotTypecomboBox.currentIndexChanged.connect(self.on_plot_type_changed)
 
+        """
+        self.plotTypecomboBox.currentIndexChanged.connect(self.on_plot_type_changed)
         # Inputs (Only in Real Time Response)
         regex = QRegExp(r"^-?\d+(\.\d{1,15})?$")
         validator = QRegExpValidator(regex)
-
         self.kpInput.setValidator(validator)
         self.kpInput.setDisabled(True)
         self.kiInput.setValidator(validator)
@@ -74,6 +74,7 @@ class OutputPlotter(QDialog):
         self.kdInput.setDisabled(True)
         self.inputValueInput.setValidator(validator)
         self.inputValueInput.setDisabled(True)
+        """
 
     def setup_plot_canvas(self):
         """Set up the matplotlib canvas for plotting."""
@@ -157,8 +158,8 @@ class OutputPlotter(QDialog):
         except Exception as e:
             print(f"Error displaying plot data: {e}")
 
+    """
     def on_plot_type_changed(self):
-        """Enable inputs if the user selects a Real Time Step Response"""
         selected = self.plotTypecomboBox.currentText()
         if selected == "Real Time Response":
             self.kpInput.setDisabled(False)
@@ -170,6 +171,7 @@ class OutputPlotter(QDialog):
             self.kiInput.setDisabled(True)
             self.kdInput.setDisabled(True)
             self.inputValueInput.setDisabled(True)
+    """
 
     def resizeEvent(self, event):
         """Handle resize events to adjust the canvas"""

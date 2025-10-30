@@ -17,6 +17,9 @@ class Start(QDialog):
         self.projectopenButton.clicked.connect(self.open_project)
         self.projectcreateButton.clicked.connect(self.create_project)
 
+        self.errorLabel.hide()
+        self.errorLabelInfo.hide()
+
         self.stacked_widget.resize(self.size())
 
     def open_project(self):
@@ -27,22 +30,27 @@ class Start(QDialog):
             return
 
         if file_path == "INVALID":
-            self.openerrorLabel.setText("Error: Invalid project file selected (txt).")
+            self.errorLabel.setText("Error: Invalid project file selected (txt).")
             return
         else:
-            self.openerrorLabel.setText("")
+            self.errorLabel.setText("")
 
         # validate the structure before proceeding
 
-        valid, error_message = validate_project_file(file_path)
+        valid, error_message, error_log = validate_project_file(file_path)
 
         if not valid:
-            self.openerrorLabel.setText(f"Error: {error_message}")
-            print(f"Error: {error_message}")
+            self.errorLabel.setText(f"Error: {error_message}")
+            self.errorLabel.show()
+            self.errorLabelInfo.setText(f"<u>Details:</u>")
+            self.errorLabelInfo.setToolTip(error_log)
+            self.errorLabelInfo.show()
             return
         
         #Continue loading if the structure is valid.
         with open(file_path, "r") as file:
+            self.errorLabel.hide()
+            self.errorLabelInfo.hide()
             content = file.read()
             print(f"Content:\n{content}")
 

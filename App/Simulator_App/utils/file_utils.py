@@ -1,9 +1,13 @@
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from PyQt5.QtCore import QStandardPaths
 from simulation_components.plant import get_plant
+from simulation_components.sensor import Sensor
 import os
 import re
 import ast
+
+MIN_SAMPLES = 10
+MAX_SAMPLES = 10000
 
 
 def get_project_file(parent=None):
@@ -162,65 +166,187 @@ def save_simulation_config_as(parent_window, current_file_path, pid_params, plan
 def validate_project_file(file_path):
     """
     Validates the structure of a project configuration file and checks
-    the consistency of the plant model and its parameters.
+    the consistency of all simulation components.
 
     Returns:
-        (bool, str): (True, "") if valid, or (False, error_message) if invalid.
+        (bool, str, str): (True, "", "") if valid, or (False, error_message, error_log) if validation errors found.
     """
 
     if not os.path.exists(file_path):
-        return False, "File does not exist."
+        return False, "File error", "File does not exist."
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
     except Exception as e:
-        return False, f"Could not read file: {e}"
+        return False, "Error: could not read file", f"{e}"
 
     # Required structure
-    required_fields = ["Project:", "Plant type:", "PID:", "Plant:", "Input:"]
+    required_fields = ["Project:", "Plant type:", "PID:", "Plant:", "Input:", "Sensor:"]
     for field in required_fields:
         if field not in content:
-            return False, f"Missing required field: '{field}'"
+            return False, "File missing required field", f"'{field}' not found in project file."
 
-    # Extract Plant type
-    match_type = re.search(r"Plant type:\s*(.+)", content)
-    if not match_type:
-        return False, "Could not determine plant type."
-    plant_type = match_type.group(1).strip()
-
-    # Extract Plant parameters
-    match_params = re.search(r"Plant:\s*(\{.*?\})", content, re.DOTALL)
-    if not match_params:
-        return False, "Could not extract plant parameters."
-    plant_params_str = match_params.group(1)
-
+    # Extract basic sections
     try:
-        plant_params = ast.literal_eval(plant_params_str)
-        if not isinstance(plant_params, dict):
-            return False, "Invalid plant parameter format (not a dictionary)."
+        project_name = re.search(r"Project:\s*(.+)", content)
+        project_name = project_name.group(1).strip() if project_name else "Unknown"
+        
+        plant_type = re.search(r"Plant type:\s*(.+)", content)
+        plant_type = plant_type.group(1).strip() if plant_type else "Unknown"
+        
+        pid_section = re.search(r"PID:\s*(\{.*?\})", content, re.DOTALL)
+        plant_section = re.search(r"Plant:\s*(\{.*?\})", content, re.DOTALL)
+        input_section = re.search(r"Input:\s*(\{.*?\})", content, re.DOTALL)
+        sensor_section = re.search(r"Sensor:\s*(\{.*?\})", content, re.DOTALL)
+        
+        if not all([pid_section, plant_section, input_section, sensor_section]):
+            return False, "Missing sections", "One or more required sections (PID, Plant, Input, Sensor) are missing or malformed."
+            
     except Exception as e:
-        return False, f"Error parsing plant parameters: {e}"
+        return False, "Error parsing file structure", f"{e}"
 
-    # Create plant instance
+    # Helper function to safely parse dictionary sections
+    def parse_section_dict(section_match, section_name):
+        if not section_match:
+            return None, f"Could not extract {section_name} parameters"
+        
+        try:
+            params_str = section_match.group(1)
+            params = ast.literal_eval(params_str)
+            if not isinstance(params, dict):
+                return None, f"Invalid {section_name} parameter format. Not a dictionary."
+            return params, ""
+        except Exception as e:
+            # Clean up the error message to remove Python internal details
+            error_msg = str(e)
+            if "malformed node or string" in error_msg or "ast." in error_msg:
+                return None, f"Invalid {section_name} parameters: syntax error in dictionary format"
+            else:
+                return None, f"Error parsing {section_name} parameters."
+
+    # Helper function to validate numeric parameters
+    def validate_numeric_params(params, required_keys, section_name):
+        errors = []
+        for key in required_keys:
+            if key not in params:
+                errors.append(f"Missing key: {key}")
+            elif not isinstance(params[key], (int, float)):
+                # Try to convert string to number if possible
+                try:
+                    if isinstance(params[key], str):
+                        params[key] = float(params[key])
+                    else:
+                        errors.append(f"Key '{key}' must be a number, got {type(params[key])}")
+                except (ValueError, TypeError):
+                    errors.append(f"Key '{key}' must be a number, got {type(params[key])} with value '{params[key]}'")
+        return errors
+
+    # Parse all sections
+    pid_params, pid_error = parse_section_dict(pid_section, "PID")
+    plant_params, plant_error = parse_section_dict(plant_section, "Plant")
+    input_params, input_error = parse_section_dict(input_section, "Input")
+    sensor_params, sensor_error = parse_section_dict(sensor_section, "Sensor")
+
+    if any(error for error in [pid_error, plant_error, input_error, sensor_error]):
+        error_msg = "; ".join([err for err in [pid_error, plant_error, input_error, sensor_error] if err])
+        return False, "Parameter parsing error", error_msg
+
+    # Validate PID parameters
+    pid_errors = validate_numeric_params(pid_params, ["kp", "ki", "kd"], "PID")
+    if pid_errors:
+        return False, "PID parameter error", "; ".join(pid_errors)
+
+    # Validate Input parameters
+    input_required_keys = ["step_time", "initial_value", "final_value", "total_time", "sample_time"]
+    input_errors = validate_numeric_params(input_params, input_required_keys, "Input")
+    
+    # Additional input validations
+    if "step_time" in input_params and "total_time" in input_params:
+        if input_params["step_time"] >= input_params["total_time"]:
+            input_errors.append("Step time cannot be greater or equal than total time.")
+    
+    if "initial_value" in input_params:
+        if input_params["initial_value"] < -100 or input_params["initial_value"] > 100:
+            input_errors.append("Initial value must be between -100 and 100.")
+    
+    if "final_value" in input_params:
+        if input_params["final_value"] < -100 or input_params["final_value"] > 100:
+            input_errors.append("Final value must be between -100 and 100.")
+    
+    if "total_time" in input_params:
+        if input_params["total_time"] > 1000:
+            input_errors.append("Total time must be less than or equal to 1000 seconds.")
+    
+    if "sample_time" in input_params and "total_time" in input_params:
+        try:
+            num_samples = input_params["total_time"] / input_params["sample_time"]
+            if num_samples < MIN_SAMPLES:
+                input_errors.append(f"Sample time is too large; there should be at least {MIN_SAMPLES} samples.")
+            if num_samples > MAX_SAMPLES:
+                input_errors.append(f"Sample time is too small; maximum {MAX_SAMPLES} samples allowed.")
+        except (ZeroDivisionError, TypeError):
+            input_errors.append("Invalid sample_time or total_time for sample calculation.")
+    
+    if input_errors:
+        return False, "Input parameter error", "; ".join(input_errors)
+
+    # Validate Plant
     try:
         plant_instance = get_plant(plant_type)
     except ValueError as e:
-        return False, str(e)
+        return False, f"Plant error", f"{str(e)}"
 
-    # Set parameters to the model before validation
+    # Set parameters to the plant model before validation
     try:
         plant_instance.set_parameters(**plant_params)
     except Exception as e:
-        return False, f"Error setting plant parameters: {e}"
+        return False, f"Error setting plant parameters", f"{e}"
 
     # Evaluate transfer function to confirm parameter consistency
     tf_result = plant_instance.get_transfer_function()
     if isinstance(tf_result, str):  # If returned error message
-        return False, f"Plant parameter error:\n{tf_result}"
+        return False, f"Plant parameter error", f"{tf_result}"
 
-    return True, ""
+    # Validate Sensor
+    sensor_required_keys = ["Numerator", "Denominator"]
+    sensor_errors = []
+    
+    for key in sensor_required_keys:
+        if key not in sensor_params:
+            sensor_errors.append(f"Missing key: {key}")
+        elif not isinstance(sensor_params[key], (str, list, int, float)):
+            sensor_errors.append(f"Key '{key}' must be a string, list, or number.")
+    
+    if sensor_errors:
+        return False, "Sensor parameter error", "; ".join(sensor_errors)
 
+    # Additional sensor validation for string format
+    if isinstance(sensor_params.get("Numerator"), str):
+        if not re.match(r"^[0-9+\-*/().,\s]+$", sensor_params["Numerator"]):
+            sensor_errors.append("Numerator contains invalid characters.")
+    
+    if isinstance(sensor_params.get("Denominator"), str):
+        if not re.match(r"^[0-9+\-*/().,\s]+$", sensor_params["Denominator"]):
+            sensor_errors.append("Denominator contains invalid characters.")
+    
+    if sensor_errors:
+        return False, "Sensor parameter error", "; ".join(sensor_errors)
+
+    # Create sensor instance and validate transfer function
+    try:
+        sensor_instance = Sensor(**sensor_params)
+        sensor_instance.set_parameters(**sensor_params)
+        sensor_tf_result = sensor_instance.get_transfer_function()
+        
+        if isinstance(sensor_tf_result, str):  # If returned error message
+            return False, f"Sensor parameter error", f"{sensor_tf_result}"
+            
+    except Exception as e:
+        return False, f"Sensor error", f"{str(e)}"
+
+    # If all checks passed, return validation success
+    return True, "", ""
 
 
 def extract_params_from_file(file_path):

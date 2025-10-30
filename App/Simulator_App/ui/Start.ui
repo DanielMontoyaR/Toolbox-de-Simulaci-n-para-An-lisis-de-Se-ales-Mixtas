@@ -59,13 +59,13 @@ font: 24pt &quot;MS Shell Dlg 2&quot;;</string>
     <string>Open Project</string>
    </property>
   </widget>
-  <widget class="QLabel" name="openerrorLabel">
+  <widget class="QLabel" name="errorLabel">
    <property name="geometry">
     <rect>
      <x>60</x>
      <y>350</y>
      <width>251</width>
-     <height>71</height>
+     <height>16</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -75,7 +75,32 @@ font: 24pt &quot;MS Shell Dlg 2&quot;;</string>
     <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;color:rgb(255, 0, 0)</string>
    </property>
    <property name="text">
-    <string/>
+    <string>Error Label</string>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="errorLabelInfo">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>370</y>
+     <width>251</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;color:rgb(255, 0, 0)</string>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;Info&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="scaledContents">
     <bool>false</bool>

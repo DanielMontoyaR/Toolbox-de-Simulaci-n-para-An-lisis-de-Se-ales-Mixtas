@@ -6,8 +6,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from utils.input_utils import must_be_nonnegative, must_be_positive, cannot_be_zero, must_be_negative
 
-
-
 MIN_SAMPLES = 10
 MAX_SAMPLES = 10000
 class Input:
