@@ -292,6 +292,7 @@ class Simulator(QMainWindow):
         pid_params = self.controller_pid.get_parameters()
         plant_params = self.plant_controller.get_parameters()
         input_params = self.input_controller.get_parameters()
+        sensor_params = self.sensor_controller.get_parameters()
         
         # Call function Save As
         new_file_path = save_simulation_config_as(
@@ -300,6 +301,7 @@ class Simulator(QMainWindow):
             pid_params=pid_params,
             plant_params=plant_params,
             input_params=input_params,
+            sensor_params=sensor_params,
             plant_type_fallback=self.plant_controller.name
         )
         

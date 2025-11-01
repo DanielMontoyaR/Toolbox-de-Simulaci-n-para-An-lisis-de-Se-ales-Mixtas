@@ -21,6 +21,7 @@ def main():
 
         widget.setFixedWidth(MAX_WIDTH)
         widget.setFixedHeight(MAX_HEIGHT)
+        widget.setWindowTitle("TSASM - Start Menu")
         widget.show()
         sys.exit(app.exec_())
 
