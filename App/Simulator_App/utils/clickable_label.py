@@ -5,11 +5,26 @@ class ClickableLabel(QLabel):
     clicked = pyqtSignal()
 
     def mousePressEvent(self, event):
+        """
+        Handle mouse press events.
+        Args:
+            event: The mouse event
+        Returns:
+            None
+        """
         if event.button() == Qt.LeftButton:
             self.clicked.emit()
 
     @classmethod
     def copyAttributes(cls, new_label, old_label):
+        """
+        Copy visual attributes from an old QLabel to a new ClickableLabel.
+        Args:
+            new_label: The new ClickableLabel instance
+            old_label: The original QLabel instance
+        Returns:
+            None
+        """
         new_label.setGeometry(old_label.geometry())
         new_label.setText(old_label.text())
         new_label.setAlignment(Qt.AlignCenter)

@@ -13,29 +13,68 @@ class Plant(ABC):
     """Abstract base class for all plants."""
 
     def __init__(self, name, parameters=None):
+        """
+        Initialize plant with name and parameters dict
+        Args:
+            name (str): Name of the plant
+            parameters (dict): Dictionary of parameter names to values
+        Returns:
+            None
+        """
         self.name = name
         self.parameters = parameters or {}
 
     @abstractmethod
     def get_transfer_function(self):
-        """Return the symbolic transfer function (sympy expression)."""
+        """
+        Return the symbolic transfer function (sympy expression).
+        Args:
+            None
+        Returns:
+            sympy expression representing the transfer function of the plant
+        """
         pass
 
     @abstractmethod
     def get_latex_equation(self):
-        """Return the LaTeX string representation of the transfer function."""
+        """
+        Return the LaTeX string representation of the transfer function.
+        Args:
+            None
+        Returns:
+            str: LaTeX formatted string of the transfer function of the plant
+        """
         pass
 
     @abstractmethod
     def get_parameter_descriptions(self):
-        """Return dict of parameter descriptions."""
+        """
+        Return dict of parameter descriptions.
+        Args:
+            None
+        Returns:
+            dict: Mapping of parameter names to their descriptions
+        """
         pass
 
     def get_parameters(self):
+        """
+        Return current internal parameters.
+        Args:
+            None
+        Returns:
+            dict: Current parameters of the plant
+        """
         return self.parameters
 
     def set_parameters(self, **kwargs):
-        """Update internal parameters with given values."""
+        """
+        Update internal parameters with given values.
+        Args:
+            kwargs: Parameter names and their new values
+        Returns:
+            None
+        """
         self.parameters.update(kwargs)
 
 
@@ -52,10 +91,31 @@ class BallAndBeamPlant(Plant):
     }
 
     def __init__(self, m=1, R=1, d=1, g=-9.81, L=1, J=1):
+        """
+        Initialize Ball and Beam plant with default parameters
+        Args:
+            m (float): Mass of the ball
+            R (float): Radius of the ball
+            d (float): Distance from pivot to center of ball
+            g (float): Acceleration due to gravity
+            L (float): Length of the beam
+            J (float): Moment of inertia of the beam
+        Returns:            
+            None
+        """
+
         params = {'m': m, 'R': R, 'd': d, 'g': g, 'L': L, 'J': J}
         super().__init__("Ball and Beam", params)
 
     def get_transfer_function(self):
+        """
+        Return the transfer function of the Ball and Beam system
+        Args:
+            None
+        Returns:
+            sympy expression representing the transfer function of the plant
+            error message (str) if parameters are invalid
+        """
         p = self.parameters
 
         error_log = ""
@@ -91,7 +151,18 @@ class BallAndBeamPlant(Plant):
         return "\n".join(e for e in errors if e)
 
     def get_latex_equation(self, m=None, R=None, d=None, g=None, L=None, J=None):
-            """Return LaTeX equation, using provided values or defaults/symbols"""
+            """
+            Return LaTeX equation, using provided values or defaults/symbols
+            Args:
+                m (float or None): Mass of the ball
+                R (float or None): Radius of the ball
+                d (float or None): Distance from pivot to center of ball
+                g (float or None): Acceleration due to gravity
+                L (float or None): Length of the beam
+                J (float or None): Moment of inertia of the beam
+            returns:
+                str: LaTeX formatted string of the transfer function
+            """
 
             m_val = str(m) if m is not None else 'm'
             R_val = str(R) if R is not None else 'R'
@@ -105,6 +176,13 @@ class BallAndBeamPlant(Plant):
                     rf"{{{L_val} \cdot \left(\frac{{{J_val}}}{{{R_val}^2}} + {m_val}\right) \cdot s^2}}$")
 
     def get_parameter_descriptions(self):
+        """
+        Get descriptions for each parameter
+        Args:
+            None
+        Returns:
+            dict: Mapping of parameter names to their descriptions
+        """
         return self.DESCRIPTIONS
 
 
@@ -118,10 +196,30 @@ class MotorSpeedPlant(Plant):
     }
 
     def __init__(self, J=1, b=1, K=1, R=1, L=1):
+        """
+        Initialize the DC Motor Speed Control plant model with given parameters.
+        Args:
+            J (float): Moment of inertia of the rotor
+            b (float): Motor viscous friction constant
+            K (float): Electromotive force constant
+            R (float): Electric resistance
+            L (float): Electric inductance
+        Returns:
+            None
+        """
+
         params = {'J': J, 'b': b, 'K': K, 'R': R, 'L': L}
         super().__init__("DC Motor Speed Control", params)
 
     def get_transfer_function(self):
+        """
+        Return the transfer function of the DC Motor Speed Control system
+        Args:
+            None
+        Returns:
+            sympy expression representing the transfer function of the plant
+            error message (str) if parameters are invalid
+        """
         p = self.parameters
         error_log = ""
         
@@ -155,7 +253,17 @@ class MotorSpeedPlant(Plant):
         return "\n".join(e for e in errors if e)
 
     def get_latex_equation(self, J=None, b=None, K=None, R=None, L=None):
-        """Return LaTeX equation, using provided values or symbols if None"""
+        """
+        Return LaTeX equation, using provided values or symbols if None
+        Args:
+            J (float or None): Moment of inertia of the rotor
+            b (float or None): Motor viscous friction constant
+            K (float or None): Electromotive force constant
+            R (float or None): Electric resistance
+            L (float or None): Electric inductance
+        Returns:
+            str: LaTeX formatted string of the transfer function
+        """
         J_val = str(J) if J is not None else 'J'
         b_val = str(b) if b is not None else 'b'
         K_val = str(K) if K is not None else 'K'
@@ -165,15 +273,43 @@ class MotorSpeedPlant(Plant):
         return rf"$\frac{{{K_val}}}{{({J_val}s + {b_val})({L_val}s + {R_val}) + {K_val}^2}}$"
 
     def get_parameter_descriptions(self):
+        """
+        Get descriptions for each parameter
+        Args:
+            None
+        Returns:
+            dict: Mapping of parameter names to their descriptions
+        """
         return self.DESCRIPTIONS
 
 
 class MotorPositionPlant(MotorSpeedPlant):
     def __init__(self, J=1, b=1, K=1, R=1, L=1):
+        """
+        Initialize the DC Motor Position Control plant model with given parameters.
+        Args:
+            J (float): Moment of inertia of the rotor
+            b (float): Motor viscous friction constant
+            K (float): Electromotive force constant
+            R (float): Electric resistance
+            L (float): Electric inductance
+        Returns:
+            None
+        """
+
         super().__init__(J, b, K, R, L)
         self.name = "DC Motor Position Control"
 
     def get_transfer_function(self):
+
+        """
+        Return the transfer function of the DC Motor Position Control system
+        Args:
+            None
+        Returns:
+            sympy expression representing the transfer function of the plant
+            error message (str) if parameters are invalid
+        """
         p = self.parameters
 
         error_log = ""
@@ -209,7 +345,17 @@ class MotorPositionPlant(MotorSpeedPlant):
         
 
     def get_latex_equation(self, J=None, b=None, K=None, R=None, L=None):
-        """Return LaTeX equation for position control, using provided values or symbols if None"""
+        """
+        Return LaTeX equation for position control, using provided values or symbols if None
+        Args:
+            J (float or None): Moment of inertia of the rotor
+            b (float or None): Motor viscous friction constant
+            K (float or None): Electromotive force constant
+            R (float or None): Electric resistance
+            L (float or None): Electric inductance
+        Returns:
+            str: LaTeX formatted string of the transfer function
+        """
         J_val = str(J) if J is not None else 'J'
         b_val = str(b) if b is not None else 'b'
         K_val = str(K) if K is not None else 'K'
@@ -226,6 +372,14 @@ class PersonalizedPlant(Plant):
     }
 
     def __init__(self, num=None, den=None):
+        """
+        Initialize the PersonalizedPlant with given numerator and denominator coefficients.
+        Args:
+            num (list or None): List of numerator coefficients
+            den (list or None): List of denominator coefficients
+        Returns:
+            None
+        """
         if num is None:
             num = [1]
         if den is None:
@@ -234,7 +388,14 @@ class PersonalizedPlant(Plant):
         super().__init__("Personalized Plant", params)
 
     def _ensure_list(self, coeffs):
-        """Convert input to list of numbers/symbols if needed"""
+        """
+        Convert input to list of numbers/symbols if needed
+        Args:
+            coeffs: input coefficients (could be list, single number, or string)
+        Returns:
+            list: list of coefficients
+
+        """
         if coeffs is None:
             return [1]  # default to 1
 
@@ -269,6 +430,16 @@ class PersonalizedPlant(Plant):
 
 
     def get_transfer_function(self, **kwargs):
+        """
+        Return the transfer function of the Personalized Plant
+        Args:
+            kwargs: Optional numerator and denominator coefficients to override
+        Returns:
+            sympy expression representing the transfer function of the plant
+            error message (str) if parameters are invalid
+        """
+
+
         params = self.parameters.copy()
         params.update(kwargs)
 
@@ -309,6 +480,14 @@ class PersonalizedPlant(Plant):
         return "\n".join(e for e in errors if e)
 
     def get_latex_equation(self, **kwargs):
+        """
+        Return LaTeX equation for the Personalized Plant
+        Args:
+            kwargs: Optional numerator and denominator coefficients to override
+        Returns:
+            str: LaTeX formatted string of the transfer function
+        """
+
         params = self.parameters.copy()
         params.update(kwargs)
 
@@ -330,7 +509,13 @@ class PersonalizedPlant(Plant):
         """
 
     def _coeffs_to_latex(self, coeffs):
-        """Convert coefficients to LaTeX polynomial string"""
+        """
+        Convert coefficients to LaTeX polynomial string
+        Args:
+            coeffs (list): List of coefficients
+        Returns:
+            str: LaTeX formatted polynomial string
+        """
         if not coeffs:
             return "0"
         
@@ -359,6 +544,14 @@ class PersonalizedPlant(Plant):
 
 
     def get_parameter_descriptions(self):
+        """
+        Get descriptions for each parameter in the plant model.
+        Args:
+            None
+        Returns:
+            dict: Mapping of parameter names to their descriptions
+        """
+
         return self.DESCRIPTIONS
 
 
@@ -371,7 +564,13 @@ PLANT_MAP = {
 }
 
 def get_plant(plant_type: str):
-    """Factory method to create plant by name"""
+    """
+    Factory method to create plant by name
+    Args:
+        plant_type (str): Name of the plant type
+    Returns:
+        Plant: Instance of the requested plant type
+    """
     try:
         return PLANT_MAP[plant_type]()
     except KeyError:

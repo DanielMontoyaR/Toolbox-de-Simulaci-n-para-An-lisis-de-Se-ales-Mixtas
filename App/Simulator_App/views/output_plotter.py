@@ -20,6 +20,16 @@ from simulation_components.output import Output
 
 class MplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
+        """
+        Initialize the matplotlib canvas.
+        Args:
+            parent: The parent widget.
+            width (float): Width of the figure.
+            height (float): Height of the figure.
+            dpi (int): Dots per inch for the figure.
+        Returns:
+            None
+        """
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
@@ -28,6 +38,17 @@ class MplCanvas(FigureCanvas):
 
 class OutputPlotter(QDialog):
     def __init__(self, plant_model: Plant, pid_controller: ControllerPID, input_signal: Input, sensor_model: Sensor, parent=None):
+        """
+        Initialize the output plotter.
+        Args:
+            plant_model (Plant): The plant model.
+            pid_controller (ControllerPID): The PID controller.
+            input_signal (Input): The input signal.
+            sensor_model (Sensor): The sensor model.
+            parent: The parent widget.
+        Returns:
+            None
+        """
         super().__init__(parent)
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/output_plotter.ui")
         loadUi(ui_path, self)
@@ -36,7 +57,10 @@ class OutputPlotter(QDialog):
         self.pid_controller = pid_controller
         self.input_signal = input_signal
 
-        print("Output Initialized:", sensor_model.get_latex_equation())
+        #Error Label
+        self.errorlabel.hide()
+
+        #print("Output Initialized:", sensor_model.get_latex_equation())
         # Business Logic 
         self.output = Output(pid_object=self.pid_controller, plant_object=self.plant_model, input_params=self.input_signal, sensor_object=sensor_model)
 
@@ -47,7 +71,13 @@ class OutputPlotter(QDialog):
         self.setup_plot_canvas()
 
     def setup_ui(self):
-        """Configure UI elements."""
+        """
+        Configure UI elements.
+        Args:
+            None
+        Returns:
+            None
+        """
         self.setWindowTitle(self.plant_model.name + " - Output Plotter")
 
         # Labels
@@ -77,7 +107,13 @@ class OutputPlotter(QDialog):
         """
 
     def setup_plot_canvas(self):
-        """Set up the matplotlib canvas for plotting."""
+        """
+        Set up the matplotlib canvas for plotting.
+        Args:
+            None
+        Returns:
+            None
+        """
         # Create canvas
         self.canvas = MplCanvas(self, width=10, height=6, dpi=80)
 
@@ -95,11 +131,24 @@ class OutputPlotter(QDialog):
             print("Error: The widget that contains the graphs was not found")
 
     def plot_output(self):
+        """
+        Plot the output based on selected plot type.
+        Args:
+            None
+        Returns:
+            None
+        """
         plot_type = self.plotTypecomboBox.currentText()
         self.display_plot_data(plot_type)
 
     def display_plot_data(self, plot_type):
-        """Display the plot data on the canvas."""
+        """
+        Display the plot data on the canvas.
+        Args:
+            plot_type (str): The type of plot to display.
+        Returns:
+            None
+        """
         try:
             # Get the complete figure from OutputTest
             if plot_type == "Step Response":
@@ -126,6 +175,7 @@ class OutputPlotter(QDialog):
 
             # If we got a valid figure, replace the canvas content
             if fig is not None:
+                self.errorlabel.hide()
                 # Get plot container
                 plot_container = self.findChild(QtWidgets.QWidget, "widget")
                 
@@ -153,7 +203,8 @@ class OutputPlotter(QDialog):
                     plot_container.updateGeometry()
                     
             else:
-                print(f"No figure returned for {plot_type}")
+                self.errorlabel.show()
+                self.errorlabel.setText(f"No figure returned for {plot_type}")
 
         except Exception as e:
             print(f"Error displaying plot data: {e}")
@@ -174,7 +225,13 @@ class OutputPlotter(QDialog):
     """
 
     def resizeEvent(self, event):
-        """Handle resize events to adjust the canvas"""
+        """
+        Handle resize events to adjust the canvas
+        Args:
+            event: The resize event.
+        Returns:
+            None    
+        """
         super().resizeEvent(event)
         if hasattr(self, 'canvas') and self.canvas.figure:
             # Ajustar el tamaño de la figura al canvas

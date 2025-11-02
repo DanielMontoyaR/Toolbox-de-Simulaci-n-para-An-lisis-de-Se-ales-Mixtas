@@ -2,6 +2,15 @@ import control as ctrl
 
 class ControllerPID:
     def __init__(self, Kp=1.0, Ki=1.0, Kd=1.0):
+        """
+        Initialize a PID controller with given parameters.
+        Args:
+            Kp (float): Proportional gain
+            Ki (float): Integral gain
+            Kd (float): Derivative gain
+        Returns:
+            None
+        """
         self.Kp = Kp  # Proportional gain
         self.Ki = Ki  # Integral gain
         self.Kd = Kd  # Derivative gain
@@ -21,11 +30,28 @@ class ControllerPID:
                                 "but may also lead to increased overshoot and oscillations.")
 
     def set_parameters(self, Kp, Ki, Kd):
+        """
+        Set the PID controller parameters.
+        Args:
+            Kp (float): Proportional gain
+            Ki (float): Integral gain
+            Kd (float): Derivative gain
+        Returns:
+            None
+        """
+
         self.Kp = Kp
         self.Ki = Ki
         self.Kd = Kd
 
     def get_parameters(self):
+        """
+        Get the current PID controller parameters.
+        Args:
+            None
+        Returns:
+            dict: Dictionary with keys 'kp', 'ki', 'kd' and their corresponding values
+        """
         return {
             "kp": self.Kp, 
             "ki": self.Ki, 
@@ -33,6 +59,13 @@ class ControllerPID:
         }
     
     def get_descriptions(self):
+        """
+        Get the descriptions of the PID controller parameters.
+        Args:
+            None
+        Returns:
+            dict: Dictionary with keys 'kp', 'ki', 'kd' and their corresponding descriptions
+        """
         return {
             "kp": self.Kp_description, 
             "ki": self.Ki_description, 
@@ -40,13 +73,27 @@ class ControllerPID:
         }
     
     def get_transfer_function(self):
-        """Return the PID controller transfer function: Kp + Ki/s + Kd*s"""
+        """
+        Return the PID controller transfer function: Kp + Ki/s + Kd*s
+        Args:
+            None
+        Returns:
+            ctrl.TransferFunction: The PID transfer function
+        """
         s = ctrl.TransferFunction.s
         pid_tf = self.Kp + self.Ki / s + self.Kd * s
         return pid_tf
     
     def get_latex_equation(self, kp=None, ki=None, kd=None):
-        """Return the LaTex equation using actual values or alternatives"""
+        """
+        Return the LaTex equation using actual values or alternatives
+        Args:
+            kp: Value to use for Kp in the equation (str or float). If None, uses self.Kp or "Kp"
+            ki: Value to use for Ki in the equation (str or float). If None, uses self.Ki or "Ki"
+            kd: Value to use for Kd in the equation (str or float). If None, uses self.Kd or "Kd"
+        Returns:
+            str: LaTex formatted PID equation
+        """
         kp_str = str(kp) if kp is not None else (str(self.Kp) if self.Kp != 0 else "Kp")
         ki_str = str(ki) if ki is not None else (str(self.Ki) if self.Ki != 0 else "Ki")
         kd_str = str(kd) if kd is not None else (str(self.Kd) if self.Kd != 0 else "Kd")

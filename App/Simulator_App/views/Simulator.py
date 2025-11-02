@@ -26,6 +26,15 @@ from views.sensor_editor import SensorEditor
 
 class Simulator(QMainWindow):
     def __init__(self, plant_type, file_path, project_type):
+        """
+        Main Simulator Window.
+        Args:
+            plant_type (str): The type of plant to initialize.
+            file_path (str): The path to the project file.
+            project_type (str): "New Project" or "Open Project".
+        Returns:
+            None
+        """
         super().__init__()
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/simulator.ui")
         loadUi(ui_path, self)
@@ -92,27 +101,49 @@ class Simulator(QMainWindow):
         self.update_window_title()
     # Update window Title
     def update_window_title(self):
-        """Update the window title to show the current project name."""
+        """
+        Update the window title to show the current project name.
+        Args:
+            None
+        Returns:
+            None
+        """
         project_name = os.path.splitext(os.path.basename(self.file_path))[0]
         self.setWindowTitle(f"Simulator - {project_name}")
 
     #--------------- Input Label Methods ---------------
     def on_input_label_clicked(self):
+        """
+        Handle click on inputLabel to open InputEditor dialog.
+        Args:
+            None
+        Returns:            
+            None
+        """
         #print("Input label clicked")
-        #self.inputLabel.setText("Input Clicked!")
         dialog = InputEditor(self.input_controller, self)
         result = dialog.exec_()
         if result == QDialog.Accepted:
-            print("Input configuration accepted")
-            print("Params:", self.input_controller.get_parameters())
+            #print("Input configuration accepted")
+            #print("Params:", self.input_controller.get_parameters())
+            pass
         else:
-            print("Input configuration canceled")
+            #print("Input configuration canceled")
+            pass
 
     #--------------- End Input Label Methods ---------------
 
     #--------------- Control Label Methods ---------------
 
     def on_control_label_clicked(self):
+        """
+        Handle click on controlLabel to open ControlEditor dialog.
+        Args:
+            None
+        Returns:
+            None
+        """
+
         dialog = ControlEditor(self.controller_pid, self)
         result = dialog.exec_()
 
@@ -121,10 +152,17 @@ class Simulator(QMainWindow):
             #dialog.apply_changes_to_model()
             self.update_control_label()
         else:
-            print("Control configuration canceled")
+            #print("Control configuration canceled")
+            pass
 
     def update_control_label(self):
-        """Update the controlLabel with the LaTeX representation of the PID controller from the model."""
+        """
+        Update the controlLabel with the LaTeX representation of the PID controller from the model.
+        Args:
+            None
+        Returns:
+            None
+        """
         params = self.controller_pid.get_parameters()
         Kp = params["kp"]
         Ki = params["ki"]
@@ -149,22 +187,35 @@ class Simulator(QMainWindow):
     #--------------- Plant Label Methods ---------------
 
     def on_plant_label_clicked(self):
-        print("Plant label clicked")
-        #self.plantLabel.setText("Plant Clicked!")
+        """
+        Handle click on plantLabel to open PlantEditor dialog.
+        Args:
+            None
+        Returns:
+            None
+        """
+        #print("Plant label clicked")
         dialog = PlantEditor(self.plant_controller, self)
         result = dialog.exec_()
 
         if result == QDialog.Accepted:
             # Apply changes to the model
-            print("Accepted")
+            #print("Accepted")
             #dialog.apply_changes_to_model()
             self.update_plant_label()
         else:
-            print("Plant configuration canceled")
+            #print("Plant configuration canceled")
+            pass
 
 
     def update_plant_label(self):
-        """Update the plantLabel with the LaTeX representation of the plant from the model."""
+        """
+        Update the plantLabel with the LaTeX representation of the plant from the model.
+        Args:
+            None
+        Returns:
+            None
+        """
         params = self.plant_controller.get_parameters()
         latex_eq = self.plant_controller.get_latex_equation(**params)
 
@@ -183,21 +234,35 @@ class Simulator(QMainWindow):
     #--------------- Sensor Label Methods ---------------
 
     def on_sensor_label_clicked(self):
-        print("Sensor label clicked")
+        """
+        Handle click on sensorLabel to open SensorEditor dialog.
+        Args:
+            None
+        Returns:
+            None
+        """
+        #print("Sensor label clicked")
         dialog = SensorEditor(self.sensor_controller, self)
         result = dialog.exec_()
 
         if result == QDialog.Accepted:
             # Apply changes to the model
-            print("Accepted")
-            print("Sensor:", self.sensor_controller.get_parameters())
+            #print("Accepted")
+            #print("Sensor:", self.sensor_controller.get_parameters())
             #dialog.apply_changes_to_model()
             self.update_sensor_label()
         else:
-            print("Sensor configuration canceled")
+            #print("Sensor configuration canceled")
+            pass
 
     def update_sensor_label(self):
-        """Update the sensorLabel with the LaTeX representation of the sensor from the model."""
+        """
+        Update the sensorLabel with the LaTeX representation of the sensor from the model.
+        Args:
+            None
+        Returns:
+            None
+        """
         params = self.sensor_controller.get_parameters()
         latex_eq = self.sensor_controller.get_latex_equation(**params)
 
@@ -220,11 +285,17 @@ class Simulator(QMainWindow):
     #--------------- Output Label Methods ---------------
 
     def on_output_label_clicked(self):
-        print("Output label clicked")
+        """
+        Handle click on outputLabel to open OutputPlotter dialog.
+        Args:
+            None
+        Returns:
+            None
+        """
+        #print("Output label clicked")
         dialog = OutputPlotter(self.plant_controller, self.controller_pid, self.input_controller, self.sensor_controller, self)
-        result = dialog.exec_() 
+        result = dialog.exec_()
 
-        #self.outputLabel.setText("Output Clicked!")
     
     #--------------- End Output Label Methods ---------------
 
@@ -232,6 +303,13 @@ class Simulator(QMainWindow):
     #--------------- Stop Button Methods ---------------
 
     def on_stop_button_clicked(self):
+        """
+        Handle click on stopButton to stop the simulation.
+        Args:
+            None    
+        Returns:
+            None
+        """
         self.stopButton.setDisabled(True)
         self.simulateButton.setDisabled(False)
         self.outputLabel.setDisabled(True)
@@ -239,8 +317,7 @@ class Simulator(QMainWindow):
         self.controlLabel.setDisabled(False)
         self.plantLabel.setDisabled(False)
         self.sensorLabel.setDisabled(False)
-        print("Stop button clicked")
-        #self.stopButton.setText("Stopped")
+        #print("Stop button clicked")
     
     #--------------- End Stop Button Methods ---------------
 
@@ -248,6 +325,13 @@ class Simulator(QMainWindow):
     #--------------- Simulate Button Methods ---------------
 
     def on_simulate_button_clicked(self):
+        """
+        Handle click on simulateButton to start the simulation.
+        Args:
+            None
+        Returns:
+            None
+        """
         self.stopButton.setDisabled(False)
         self.simulateButton.setDisabled(True)
         self.outputLabel.setDisabled(False)
@@ -255,14 +339,20 @@ class Simulator(QMainWindow):
         self.controlLabel.setDisabled(True)
         self.plantLabel.setDisabled(True)
         self.sensorLabel.setDisabled(True)
-        print("Simulate button clicked")
-        #self.simulateButton.setText("Simulating...")
+        #print("Simulate button clicked")
 
     #--------------- End Simulate Button Methods ---------------
 
 
     #--------------- Action Save Methods ---------------
     def on_action_save_triggered(self):
+        """"
+        Handle Save action using the separate file utility function.
+        Args:
+            None
+        Returns:
+            None
+        """
         pid_params = self.controller_pid.get_parameters()
         plant_params = self.plant_controller.get_parameters()
         input_params = self.input_controller.get_parameters()
@@ -285,8 +375,14 @@ class Simulator(QMainWindow):
     #--------------- Action Save As Methods --------------
 
     def on_action_save_as_triggered(self):
-        """Handle Save As action using the separate file utility function."""
-        print("Save As triggered")
+        """
+        Handle Save As action using the separate file utility function.
+        Args:
+            None
+        Returns:
+            None
+        """
+        #print("Save As triggered")
         
         # Get current params
         pid_params = self.controller_pid.get_parameters()
@@ -312,7 +408,7 @@ class Simulator(QMainWindow):
             
             # Display success message
             QMessageBox.information(self, "Success", 
-                                f"Project saved as:\n{os.path.basename(new_file_path)}")
+                                    f"Project saved as:\n{os.path.basename(new_file_path)}")
 
     #--------------- End Action Save As Methods --------------
 
@@ -321,7 +417,13 @@ class Simulator(QMainWindow):
     #--------------- Load Params Methods --------------
 
     def load_params_to_models(self):
-        """Load PID, Plant, and Input parameters from the saved project file."""
+        """
+        Load PID, Plant, and Input parameters from the saved project file.
+        Args:
+            None
+        Returns:
+            None
+        """
         # Extract parameters from file using the separate function
         pid_params, plant_params, input_params, sensor_params = extract_params_from_file(self.file_path)
 
@@ -336,14 +438,14 @@ class Simulator(QMainWindow):
             if sensor_params:
                 self.sensor_controller.set_parameters(Numerator=sensor_params["Numerator"], Denominator=sensor_params["Denominator"])
         except Exception as e:
-            print(f"Error setting parameters to models: {e}")
+            #print(f"Error setting parameters to models: {e}")
             return
 
-        print("Parameters successfully loaded into models.")
-        print("PID:", self.controller_pid.get_parameters())
-        print("Plant:", self.plant_controller.get_parameters())
-        print("Input:", self.input_controller.get_parameters())
-        print("Sensor:", self.sensor_controller.get_parameters())
+        #print("Parameters successfully loaded into models.")
+        #print("PID:", self.controller_pid.get_parameters())
+        #print("Plant:", self.plant_controller.get_parameters())
+        #print("Input:", self.input_controller.get_parameters())
+        #print("Sensor:", self.sensor_controller.get_parameters())
 
         self.update_control_label()
         self.update_plant_label()

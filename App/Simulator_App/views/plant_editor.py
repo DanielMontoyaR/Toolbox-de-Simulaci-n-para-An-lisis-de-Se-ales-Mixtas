@@ -11,6 +11,13 @@ from utils.input_utils import simulator_create_pixmap_equation
 
 class PlantEditor(QDialog):
     def __init__(self, plant_controller: Plant, parent=None):
+        """
+        Dialog for editing Plant parameters.
+        Args:
+            plant_controller (Plant): The Plant controller object to edit.
+        Returns:
+            None
+        """
         super().__init__(parent)
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/plant_editor.ui")
         loadUi(ui_path, self)
@@ -78,7 +85,13 @@ class PlantEditor(QDialog):
         #self.load_from_model()
 
     def load_from_model(self):
-        """Initialize the input fields with current controller values"""
+        """
+        Initialize the input fields with current controller values
+        Args:
+            None
+        Returns:
+            None
+        """
         params = self.plant_controller.get_parameters()
         for i, (key, value) in enumerate(params.items(), start=1):
             line_edit = getattr(self, f"param{i}Input")
@@ -91,7 +104,13 @@ class PlantEditor(QDialog):
 
 
     def update_plant_preview(self):
-        """Update the plant preview label"""
+        """
+        Update the plant preview label
+        Args:
+            None
+        Returns:
+            None
+        """
         try:
             # Take values from inputs
             params = {}
@@ -120,11 +139,17 @@ class PlantEditor(QDialog):
         
         except Exception as e:
             # If there's an error, show a message or leave the preview empty
-            print(f"Error updating preview: {e}")
+            #print(f"Error updating preview: {e}")
             self.plantLabel.setText("Error: Invalid input")
 
     def apply_changes_to_model(self):
-        """Update the plant_controller object with values from inputs"""
+        """
+        Update the plant_controller object with values from inputs
+        Args:
+            None
+        Returns:
+            None
+        """
 
         params = {}
         # Collect values from input fields
@@ -160,8 +185,8 @@ class PlantEditor(QDialog):
         else:
             self.errorLabel.hide()
             self.errorLabelInfo.hide()
-            print("Parameters updated")
-            print(self.plant_controller.get_parameters())
-            print("Transfer Function")
-            print(self.plant_controller.get_transfer_function())
+            #print("Parameters updated")
+            #print(self.plant_controller.get_parameters())
+            #print("Transfer Function")
+            #print(self.plant_controller.get_transfer_function())
             self.accept()  # Close dialog with Accepted status

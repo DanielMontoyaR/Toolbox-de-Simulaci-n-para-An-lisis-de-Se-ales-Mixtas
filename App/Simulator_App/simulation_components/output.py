@@ -8,28 +8,72 @@ from PyQt5.QtCore import Qt
 
 class Output:
     def __init__(self, pid_object=None, plant_object=None, input_params=None, sensor_object=None):
+        """
+        Initialize Output with PID, Plant, Input Parameters, and Sensor objects
+        Args:
+            pid_object: PID controller object
+            plant_object: Plant model object
+            input_params: Input parameters for the simulation
+            sensor_object: Sensor model object
+        Returns:
+            None
+        """
         self.pid_object = pid_object
         self.plant_object = plant_object
         self.input_params = input_params
         self.sensor_object = sensor_object
 
     def get_pid_function(self):
+        """"
+        Return the PID controller object
+        Args:
+            None
+        Returns:
+            PID controller object
+        """
         return self.pid_object
 
     def get_plant_function(self):
+        """
+        Return the Plant model object
+        Args:
+            None
+        Returns:
+            Plant model object
+        """
         return self.plant_object
     
     def get_sensor_function(self):
+        """
+        Return the Sensor model object
+        Args:
+            None
+        Returns:
+            Sensor model object
+        """
         return self.sensor_object
 
     def get_input_params(self):
+        """
+        Return the Input parameters for the simulation
+        Args:
+            None
+        Returns:
+            Input parameters object
+        """
         return self.input_params
     
 
     
     # Métodos de transfer function
     def get_closed_loop_transfer_function(self):
-        """Calculate the closed-loop transfer function: plant*pid / (1 + plant*pid)"""
+        """
+        Calculate the closed-loop transfer function: plant*pid / (1 + plant*pid*sensor)
+        Args:
+            None
+        Returns:
+            Closed-loop transfer function object
+        """
         try:
             pid_tf = self.get_pid_function().get_transfer_function()
             plant_tf = self.get_plant_function().get_transfer_function()
@@ -40,11 +84,17 @@ class Output:
             closed_loop = ctrl.feedback(open_loop, sensor_tf) #plant*pid / (1 + plant*pid*sensor_tf)
             return closed_loop
         except Exception as e:
-            print(f"Error in calculating closed-loop transfer function: {e}")
+            #print(f"Error in calculating closed-loop transfer function: {e}")
             return None
 
     def get_open_loop_transfer_function(self):
-        """Calculate the open-loop transfer function"""
+        """
+        Calculate the open-loop transfer function
+        Args:
+            None
+        Returns:
+            Open-loop transfer function object
+        """
         try:
             pid_tf = self.get_pid_function().get_transfer_function()
             plant_tf = self.get_plant_function().get_transfer_function()
@@ -52,12 +102,18 @@ class Output:
             open_loop = ctrl.series(plant_tf, pid_tf)
             return open_loop
         except Exception as e:
-            print(f"Error in calculating open-loop transfer function: {e}")
+            #print(f"Error in calculating open-loop transfer function: {e}")
             return None
 
     # -------------------------------------- Plotting Methods     --------------------------------------
     def plot_step_response(self):
-        """Plot Step Response and return the matplotlib Figure"""
+        """
+        Plot Step Response and return the matplotlib Figure
+        Args:
+            None
+        Returns:
+            Matplotlib Figure object with the step response plot
+        """
         try:
             closed_loop_tf = self.get_closed_loop_transfer_function()
             if closed_loop_tf is None:
@@ -120,11 +176,17 @@ class Output:
             return fig
 
         except Exception as e:
-            print(f"Error plotting step response: {e}")
+            #print(f"Error plotting step response: {e}")
             return None
 
     def plot_impulse_response(self):
-        """Plot Impulse Response and return the matplotlib Figure"""
+        """
+        Plot Impulse Response and return the matplotlib Figure
+        Args:
+            None
+        Returns:
+            Matplotlib Figure object with the impulse response plot
+        """
         try:
             closed_loop_tf = self.get_closed_loop_transfer_function()
             if closed_loop_tf is None:
@@ -184,15 +246,21 @@ class Output:
             # Adjust design
             fig.tight_layout()
             
-            print(f"Impulse response: impulse_time={step_time}, total_time={total_time}")
+            #print(f"Impulse response: impulse_time={step_time}, total_time={total_time}")
             return fig
 
         except Exception as e:
-            print(f"Error plotting impulse response: {e}")
+            #print(f"Error plotting impulse response: {e}")
             return None
 
     def plot_bode(self):
-        """Plot Bode diagram and return the matplotlib Figure"""
+        """
+        Plot Bode diagram and return the matplotlib Figure
+        Args:
+            None
+        Returns:
+            Matplotlib Figure object with the Bode plot
+        """
         try:
             # Get transfer function from output
             closed_loop_tf = self.get_closed_loop_transfer_function()
@@ -235,11 +303,17 @@ class Output:
             return fig
 
         except Exception as e:
-            print(f"Error plotting Bode diagram: {e}")
+            #print(f"Error plotting Bode diagram: {e}")
             return None
 
     def plot_nyquist(self):
-        """Plot Nyquist diagram and return the matplotlib Figure"""
+        """
+        Plot Nyquist diagram and return the matplotlib Figure
+        Args:
+            None
+        Returns:
+            Matplotlib Figure object with the Nyquist plot
+        """
         try:
             # Get transfer function from output
             closed_loop_tf = self.get_closed_loop_transfer_function()
@@ -272,11 +346,17 @@ class Output:
             return fig
 
         except Exception as e:
-            print(f"Error plotting Nyquist diagram: {e}")
+            #print(f"Error plotting Nyquist diagram: {e}")
             return None
 
     def plot_root_locus(self):
-        """Plot Root Locus and return the matplotlib Figure"""
+        """
+        Plot Root Locus and return the matplotlib Figure
+        Args:
+            None
+        Returns:
+            Matplotlib Figure object with the Root Locus plot
+        """
         try:
             # Get open-loop transfer function from output
             open_loop_tf = self.get_open_loop_transfer_function()
@@ -305,18 +385,26 @@ class Output:
             return fig
 
         except Exception as e:
-            print(f"Error plotting Root Locus: {e}")
+            #print(f"Error plotting Root Locus: {e}")
             return None
 
+    """
     def plot_real_time_response(self):
-        """Plot Real Time Response and return the matplotlib Figure"""
-        # Por ahora solo el placeholder - lo implementaremos después
-        print("Real time response plot not implemented yet")
-        return None
+        # Plot Real Time Response and return the matplotlib Figure
+        #print("Real time response plot not implemented yet")
+        #return None
+    """
 
-    # Método auxiliar para convertir figura a QPixmap (opcional)
+    # auxiliary method to convert figure to QPixmap (Optional)
     def figure_to_qpixmap(self, fig):
-        """Convert matplotlib figure to QPixmap"""
+        """
+        Convert matplotlib figure to QPixmap
+        Args:
+            fig: Matplotlib Figure object
+            
+        Returns:
+            QPixmap object
+        """
         if fig is None:
             return None
             

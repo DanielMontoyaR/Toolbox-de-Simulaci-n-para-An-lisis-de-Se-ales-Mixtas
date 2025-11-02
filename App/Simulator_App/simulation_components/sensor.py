@@ -7,6 +7,14 @@ class Sensor(PersonalizedPlant):
     """
     
     def __init__(self, Numerator=None, Denominator=None):
+        """
+        Initialize the Sensor with given numerator and denominator coefficients.
+        Args:
+            Numerator (list): Numerator coefficients of the sensor transfer function
+            Denominator (list): Denominator coefficients of the sensor transfer function
+        Returns:
+            None
+        """
         super().__init__(Numerator, Denominator)
         self.name = "Sensor"
         

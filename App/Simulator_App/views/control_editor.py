@@ -10,6 +10,15 @@ from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtCore import QRegExp
 class ControlEditor(QDialog):
     def __init__(self, controller_pid: ControllerPID, parent=None):
+        """
+        Dialog for editing PID controller parameters.
+        Args:
+            controller_pid (ControllerPID): The PID controller model to edit.
+            parent: The parent widget.
+        Returns:
+            None
+        """
+
         super().__init__(parent)
 
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/control_editor.ui")
@@ -48,14 +57,26 @@ class ControlEditor(QDialog):
         #self.load_from_model()
 
     def load_from_model(self):
-        """Initialize the input fields with current controller values"""
+        """
+        Initialize the input fields with current controller values
+        Args:
+            None
+        Returns:
+            None
+        """
         params = self.controller_pid.get_parameters()
         self.kpInput.setText(str(params["kp"]))
         self.kiInput.setText(str(params["ki"]))
         self.kdInput.setText(str(params["kd"]))
 
     def update_pid_preview(self):
-        """Update the preview label with the current LaTeX PID equation"""
+        """
+        Update the preview label with the current LaTeX PID equation
+        Args:
+            None
+        Returns:
+            None
+        """
         kp = self.kpInput.text() or "Kp"
         ki = self.kiInput.text() or "Ki"
         kd = self.kdInput.text() or "Kd"
@@ -70,15 +91,21 @@ class ControlEditor(QDialog):
         self.pidLabel.setPixmap(pixmap)
 
     def apply_changes_to_model(self):
-        """Update the controller_pid object with values from inputs"""
+        """
+        Update the controller_pid object with values from inputs
+        Args:
+            None
+        Returns:
+            None
+        """
         try:
             params = self.controller_pid.get_parameters()
             kp = float(self.kpInput.text() or params["kp"])
             ki = float(self.kiInput.text() or params["ki"])
             kd = float(self.kdInput.text() or params["kd"])
         except ValueError as e:
-            kp, ki, kd = params["kp"], params["ki"], params["kd"]
-            print(f"Error applying changes: {e}")
+            kp, ki, kd = params["kp"], params["ki"], params["kd"] # Fallback to previous values on error
+            #print(f"Error applying changes: {e}")
 
             
         self.controller_pid.set_parameters(kp, ki, kd)

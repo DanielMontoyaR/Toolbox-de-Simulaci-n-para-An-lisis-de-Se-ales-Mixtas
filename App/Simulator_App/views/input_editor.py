@@ -11,6 +11,13 @@ from PyQt5.QtCore import QRegExp
 
 class InputEditor(QDialog):
     def __init__(self, input_controller: Input, parent=None):
+        """
+        Dialog for editing Input parameters.
+        Args:
+            input_controller (Input): The Input controller object to edit.
+        Returns:
+            None
+        """
         super().__init__(parent)
 
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/input_editor.ui")
@@ -49,7 +56,13 @@ class InputEditor(QDialog):
         self.errorLabelInfo.hide()
 
     def load_from_model(self):
-        """Initialize the input fields with current input values"""
+        """
+        Initialize the input fields with current input values
+        Args:
+            None
+        Returns:
+            None
+        """
         params = self.input_controller.get_parameters()
         self.stepTimeInput.setText(str(params["step_time"]))
         self.initialValueInput.setText(str(params["initial_value"]))
@@ -58,7 +71,13 @@ class InputEditor(QDialog):
         self.sampleTimeInput.setText(str(params["sample_time"]))
 
     def apply_changes_to_model(self):
-        """Apply changes from input fields to the input model"""
+        """
+        Apply changes from input fields to the input model
+        Args:
+            None
+        Returns:
+            None
+        """
         try:
             step_time = float(self.stepTimeInput.text())
             initial_value = float(self.initialValueInput.text())

@@ -227,6 +227,15 @@ def validate_project_file(file_path):
 
     # Helper function to validate numeric parameters
     def validate_numeric_params(params, required_keys, section_name):
+        """
+        Validate that required keys exist and are numeric in the given params dictionary.
+        Args:
+            params (dict): The parameters dictionary to validate
+            required_keys (list): List of keys that must be present and numeric
+            section_name (str): Name of the section for error messages
+        Returns:
+            list: List of error messages found during validation (empty if none)
+        """
         errors = []
         for key in required_keys:
             if key not in params:

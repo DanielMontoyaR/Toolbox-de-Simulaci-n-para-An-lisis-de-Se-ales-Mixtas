@@ -10,6 +10,18 @@ MIN_SAMPLES = 10
 MAX_SAMPLES = 10000
 class Input:
     def __init__(self, step_time=1, initial_value=0, final_value=1, total_time=10, sample_time=0.01):
+        """
+        Initialize the input parameters for the simulation.
+        Args:
+            step_time (float): Time at which the step changes from initial to final value
+            initial_value (float): Initial value of the step input
+            final_value (float): Final value of the step input
+            total_time (float): Total time for the simulation
+            sample_time (float): Time interval between samples
+        Returns:
+            None
+        """
+
         self.step_time = step_time
         self.initial_value = initial_value
         self.final_value = final_value
@@ -24,6 +36,17 @@ class Input:
 
 
     def set_parameters(self, step_time, initial_value, final_value, total_time, sample_time):
+        """
+        Set the input parameters for the simulation.
+        Args:
+            step_time (float): Time at which the step changes from initial to final value
+            initial_value (float): Initial value of the step input
+            final_value (float): Final value of the step input
+            total_time (float): Total time for the simulation
+            sample_time (float): Time interval between samples
+        Returns:
+            error_log (str): Error messages if any validations fail, empty string otherwise
+        """
         
         #Handle logic in case of invalid inputs
         errors = [
@@ -72,6 +95,14 @@ class Input:
             self.sample_time = sample_time
     
     def get_parameters(self):
+        """
+        Get the current input parameters for the simulation.
+        Args:
+            None
+        Returns:
+            dict: Dictionary with current input parameters
+        """
+
         return {
             "step_time": self.step_time,
             "initial_value": self.initial_value,
@@ -81,6 +112,14 @@ class Input:
         }
     
     def get_descriptions(self):
+        """
+        Get the descriptions of the input parameters.
+        Args:
+            None
+        Returns:
+            dict: Dictionary with descriptions of input parameters
+        """
+
         return {
             "step_time": self.step_time_description,
             "initial_value": self.initial_value_description,

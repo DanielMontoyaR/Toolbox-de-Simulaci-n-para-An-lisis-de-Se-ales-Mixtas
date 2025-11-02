@@ -11,6 +11,13 @@ from utils.input_utils import simulator_create_pixmap_equation
 
 class SensorEditor(QDialog):
     def __init__(self, sensor_controller: Sensor, parent=None):
+        """
+        Dialog for editing Sensor parameters.
+        Args:
+            sensor_controller (Sensor): The Sensor controller object to edit.
+        Returns:
+            None
+        """
         super().__init__(parent)
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/sensor_editor.ui")
         loadUi(ui_path, self)
@@ -53,9 +60,15 @@ class SensorEditor(QDialog):
         self.load_from_model()
 
     def load_from_model(self):
-        """Initialize the input fields with current controller values"""
+        """
+        Initialize the input fields with current controller values
+        Args:
+            None
+        Returns:
+            None
+        """
         params = self.sensor_controller.get_parameters()
-        print("Loading sensor parameters:", params)
+        #print("Loading sensor parameters:", params)
         
         # Convert numerator list to comma-separated string
         if 'Numerator' in params:
@@ -78,7 +91,13 @@ class SensorEditor(QDialog):
             self.sensorDenominatorInput.setText(den_str)
             
     def update_sensor_preview(self):
-        """Update the sensor preview label"""
+        """
+        Update the sensor preview label
+        Args:
+            None
+        Returns:
+            None
+        """
         try:
             # Take values from inputs
             params = {}
@@ -105,12 +124,18 @@ class SensorEditor(QDialog):
         
         except Exception as e:
             # If there's an error, show a message or leave the preview empty
-            print(f"Error updating preview: {e}")
+            #print(f"Error updating preview: {e}")
             # Optional: show an error message in the preview
             self.sensorLabel.setText("Error: Invalid input")
 
     def apply_changes_to_model(self):
-        """Update the sensor_controller object with values from inputs"""
+        """
+        Apply changes from input fields to the sensor controller
+        Args:
+            None
+        Returns:
+            None
+        """
         params = {}
         
         # Collect values from input fields
@@ -125,7 +150,7 @@ class SensorEditor(QDialog):
         # Save old parameters for comparison
         old_params = self.sensor_controller.get_parameters().copy()
 
-        # CORREGIR: Usar los nombres correctos que espera PersonalizedPlant
+        # Use the names expected by Sensor (that extends PersonalizedPlant)
         self.sensor_controller.set_parameters(
             Numerator=params.get('Numerator'), 
             Denominator=params.get('Denominator')
@@ -146,8 +171,8 @@ class SensorEditor(QDialog):
         else:
             self.errorLabel.hide()
             self.errorLabelInfo.hide()
-            print("Sensor parameters updated")
-            print(self.sensor_controller.get_parameters())
-            print("Sensor Transfer Function:")
-            print(self.sensor_controller.get_transfer_function())
+            #print("Sensor parameters updated")
+            #print(self.sensor_controller.get_parameters())
+            #print("Sensor Transfer Function:")
+            #print(self.sensor_controller.get_transfer_function())
             self.accept()  # Close dialog with Accepted status

@@ -1,12 +1,19 @@
 import os
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
+from PyQt5.QtCore import Qt
 from utils.file_utils import create_project_file
 from utils.input_utils import create_project_validate_inputs
 from views.simulator import Simulator
 
 class CreateProject(QDialog):
     def __init__(self, stacked_widget):
+        """
+        Dialog for creating a new project.
+        Args:
+            stacked_widget: The stacked widget to manage navigation.
+        Returns:
+            None"""
         super().__init__()
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/project_create.ui")
         loadUi(ui_path, self)
@@ -20,13 +27,41 @@ class CreateProject(QDialog):
         self.stacked_widget.resize(self.size())
 
 
+    def keyPressEvent(self, event):
+        """
+        System Ignore ESC key press event (this caused system to display a white screen and stopped working)
+        Args:
+            event: Esc key press event
+        Returns:
+            None
+        """
+        if event.key() == Qt.Key_Escape:
+            # Ignore ESC
+            event.ignore()
+        else:
+            super().keyPressEvent(event)
+
     def browse_path(self):
+        """
+        Open a file dialog to select a directory.
+        Args:
+            None
+        Returns:
+            None
+        """
         from PyQt5.QtWidgets import QFileDialog
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
             self.pathLineEdit.setText(directory)
 
     def create_project(self):
+        """
+        Validate inputs and create a new project.
+        Args:
+            None
+        Returns:
+            None
+        """
         #print("Project creation initiated")
         #print(self.nombreproyectolineEdit.text())
 
@@ -72,4 +107,11 @@ class CreateProject(QDialog):
 
 
     def go_back(self):
+        """
+        Navigate back to the previous screen.
+        Args:
+            None
+        Returns:
+            None
+        """
         self.stacked_widget.setCurrentIndex(0)
