@@ -39,17 +39,6 @@
           </item>
          </layout>
         </item>
-        <item row="1" column="1">
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0" colspan="2">
-           <widget class="QPushButton" name="plotButton">
-            <property name="text">
-             <string>Plot</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="errorlabel">
           <property name="styleSheet">
@@ -59,6 +48,20 @@
            <string>ErrorLabel</string>
           </property>
          </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="errorlabel_2">
+            <property name="styleSheet">
+             <string notr="true">color:rgb(255, 0, 0)</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>

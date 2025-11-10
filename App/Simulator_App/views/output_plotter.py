@@ -85,26 +85,12 @@ class OutputPlotter(QDialog):
         self.titleLabel.setText(f"Output Plotter for {self.plant_model.name}")
 
         # Button Configuration
-        self.plotButton.clicked.connect(self.plot_output)
-
+        #self.plotButton.clicked.connect(self.plot_output)
         # Combobox configuration
         self.plotTypecomboBox.addItems(["Step Response", "Impulse Response", "Bode Plot", "Nyquist Plot", "Root Locus"])
         self.plotTypecomboBox.setCurrentIndex(0)
-
-        """
-        self.plotTypecomboBox.currentIndexChanged.connect(self.on_plot_type_changed)
-        # Inputs (Only in Real Time Response)
-        regex = QRegExp(r"^-?\d+(\.\d{1,15})?$")
-        validator = QRegExpValidator(regex)
-        self.kpInput.setValidator(validator)
-        self.kpInput.setDisabled(True)
-        self.kiInput.setValidator(validator)
-        self.kiInput.setDisabled(True)
-        self.kdInput.setValidator(validator)
-        self.kdInput.setDisabled(True)
-        self.inputValueInput.setValidator(validator)
-        self.inputValueInput.setDisabled(True)
-        """
+        self.plotTypecomboBox.currentIndexChanged.connect(self.plot_output)
+        
 
     def setup_plot_canvas(self):
         """
@@ -127,6 +113,7 @@ class OutputPlotter(QDialog):
 
             self.canvas.setStyleSheet("background-color: white;")
             self.canvas.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            self.plot_output()
         else:
             print("Error: The widget that contains the graphs was not found")
 
@@ -209,20 +196,6 @@ class OutputPlotter(QDialog):
         except Exception as e:
             print(f"Error displaying plot data: {e}")
 
-    """
-    def on_plot_type_changed(self):
-        selected = self.plotTypecomboBox.currentText()
-        if selected == "Real Time Response":
-            self.kpInput.setDisabled(False)
-            self.kiInput.setDisabled(False)
-            self.kdInput.setDisabled(False)
-            self.inputValueInput.setDisabled(False)
-        else:
-            self.kpInput.setDisabled(True)
-            self.kiInput.setDisabled(True)
-            self.kdInput.setDisabled(True)
-            self.inputValueInput.setDisabled(True)
-    """
 
     def resizeEvent(self, event):
         """

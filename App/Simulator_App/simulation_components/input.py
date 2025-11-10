@@ -31,8 +31,11 @@ class Input:
         self.initial_value_description = ("Initial Value:\nThe value of the step input at the start of the simulation.\n")
         self.final_value_description = ("Final Value:\nThe value of the step input at the end of the simulation.\n")
         self.total_time_description = ("Total Time:\nThe total duration for which the step input is applied (seconds).\n")
-        self.sample_time_description = ("Sample Time:\nThis parameter defines the sampling rate of the system and affects the accuracy of the response in simulations."
-        )
+        self.sample_time_description = ("Sample Time:\nThis parameter defines the sampling rate of the system and affects the accuracy of the response in simulations.")
+        self.input_component_description = ("Input Generator:\n"
+                                   "Generates a signal for the control system simulation.\n"
+                                   "The signal starts at an initial value, then jumps to a\n"
+                                   "final value at the specified step time.")
 
 
     def set_parameters(self, step_time, initial_value, final_value, total_time, sample_time):
@@ -127,3 +130,14 @@ class Input:
             "total_time": self.total_time_description,
             "sample_time": self.sample_time_description
         }
+    
+    def get_component_description(self):
+        """
+        Get the description of the Input  component
+        Args:
+            None
+        Returns:
+            str: Description of the Input component
+
+        """
+        return self.input_component_description

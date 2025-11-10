@@ -24,7 +24,7 @@ class PlantEditor(QDialog):
 
         self.plant_controller = plant_controller
 
-        self.setWindowTitle(plant_controller.name + " Editor")
+        self.setWindowTitle(plant_controller.name + " Plant Editor")
         self.errorLabel.hide()
         self.errorLabelInfo.hide()
 

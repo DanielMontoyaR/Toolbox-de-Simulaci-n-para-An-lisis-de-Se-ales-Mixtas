@@ -28,6 +28,14 @@ class ControllerPID:
                                 "Addresses accumulated past errors.\n"
                                 "Higher Ki values can eliminate steady-state error,\n"
                                 "but may also lead to increased overshoot and oscillations.")
+        
+        self.Controller_PID_description = ("PID Controller:\n"
+                                "A control system that combines three corrective actions to minimize error:\n"
+                                "Proportional (P): Kp responds to the current error\n"
+                                "Integral (I): Ki removes accumulated (steady-state) error\n"
+                                "Derivative (D): Kd anticipates future error based on the rate of change\n\n"
+                                "Overall Transfer Function: Kp + Ki/s + Kd·s")
+
 
     def set_parameters(self, Kp, Ki, Kd):
         """
@@ -99,3 +107,13 @@ class ControllerPID:
         kd_str = str(kd) if kd is not None else (str(self.Kd) if self.Kd != 0 else "Kd")
 
         return r"$%s + \frac{%s}{s} + %s\,s$" % (kp_str, ki_str, kd_str)
+    
+    def get_component_description(self):
+        """
+        Get the description of the PID controller component
+        Args:
+            None
+        Returns:
+            str: Description of the PID controller component
+        """
+        return self.Controller_PID_description

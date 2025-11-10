@@ -39,6 +39,15 @@ class Simulator(QMainWindow):
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/simulator.ui")
         loadUi(ui_path, self)
 
+        self.plant_type = plant_type
+
+        #Create models
+        self.controller_pid = ControllerPID()
+        self.plant_controller = get_plant(plant_type)
+        self.input_controller = Input()
+        self.sensor_controller = Sensor()
+
+
         # Make labels clickable
         label_map = {
             self.inputLabel: "inputLabel",
@@ -58,20 +67,26 @@ class Simulator(QMainWindow):
         
         # Connect signals to slots
         self.inputLabel.clicked.connect(self.on_input_label_clicked)
+        self.inputLabel.setToolTip(self.input_controller.get_component_description())
+
         self.outputLabel.clicked.connect(self.on_output_label_clicked)
+
         self.controlLabel.clicked.connect(self.on_control_label_clicked)
+        self.controlLabel.setToolTip(self.controller_pid.get_component_description())
+
         self.plantLabel.clicked.connect(self.on_plant_label_clicked)
+        self.plantLabel.setToolTip(self.plant_controller.get_component_description())
+
         self.sensorLabel.clicked.connect(self.on_sensor_label_clicked)
+        self.sensorLabel.setToolTip(self.sensor_controller.get_component_description())
+        
+        #Indicator Labels Centering
+        self.controlLabelIndicator.setAlignment(Qt.AlignCenter)
+        self.plantLabelIndicator.setAlignment(Qt.AlignCenter)
+        self.sensorLabelIndicator.setAlignment(Qt.AlignCenter)
 
         #Buttons
-        self.stopButton.clicked.connect(self.on_stop_button_clicked)
-        self.simulateButton.clicked.connect(self.on_simulate_button_clicked)
-
-        #Create models
-        self.controller_pid = ControllerPID()
-        self.plant_controller = get_plant(plant_type)
-        self.input_controller = Input()
-        self.sensor_controller = Sensor()
+        self.resetButton.clicked.connect(self.on_reset_button_clicked)
 
         #File path
         self.file_path = file_path
@@ -89,11 +104,6 @@ class Simulator(QMainWindow):
 
         #print("plant Type:", self.plant_controller.name)
 
-        #Disabled elements at start
-        self.outputLabel.setDisabled(True)
-        self.stopButton.setDisabled(True)
-        self.simulateButton.setDisabled(False)
-
         #Menu bar actions
         self.actionSave.triggered.connect(self.on_action_save_triggered) 
         self.actionSave_As.triggered.connect(self.on_action_save_as_triggered) 
@@ -109,7 +119,7 @@ class Simulator(QMainWindow):
             None
         """
         project_name = os.path.splitext(os.path.basename(self.file_path))[0]
-        self.setWindowTitle(f"Simulator - {project_name}")
+        self.setWindowTitle(f"Simulator - {project_name} ({self.plant_controller.name})")
 
     #--------------- Input Label Methods ---------------
     def on_input_label_clicked(self):
@@ -279,9 +289,6 @@ class Simulator(QMainWindow):
 
     #--------------- End Sensor Label Methods ---------------
 
-
-
-
     #--------------- Output Label Methods ---------------
 
     def on_output_label_clicked(self):
@@ -293,56 +300,69 @@ class Simulator(QMainWindow):
             None
         """
         #print("Output label clicked")
+        self.inputLabel.setDisabled(True)
+        self.controlLabel.setDisabled(True)
+        self.plantLabel.setDisabled(True)
+        self.sensorLabel.setDisabled(True)
         dialog = OutputPlotter(self.plant_controller, self.controller_pid, self.input_controller, self.sensor_controller, self)
         result = dialog.exec_()
+        self.inputLabel.setDisabled(False)
+        self.controlLabel.setDisabled(False)
+        self.plantLabel.setDisabled(False)
+        self.sensorLabel.setDisabled(False)
 
     
     #--------------- End Output Label Methods ---------------
 
+    #--------------- Reset Button Methods ---------------
 
-    #--------------- Stop Button Methods ---------------
-
-    def on_stop_button_clicked(self):
+    def on_reset_button_clicked(self):
         """
-        Handle click on stopButton to stop the simulation.
+        Handle click on reset button to reset the component values.
         Args:
             None    
         Returns:
             None
         """
-        self.stopButton.setDisabled(True)
-        self.simulateButton.setDisabled(False)
-        self.outputLabel.setDisabled(True)
-        self.inputLabel.setDisabled(False)
-        self.controlLabel.setDisabled(False)
-        self.plantLabel.setDisabled(False)
-        self.sensorLabel.setDisabled(False)
-        #print("Stop button clicked")
+        # Create confirmation dialog
+        reply = QMessageBox.question(
+            self,
+            "Confirm Reset",
+            "Are you sure you want to reset all simulation components?\n\n"
+            "This will reset:\n"
+            "• PID Controller parameters\n"
+            "• Plant model parameters\n"
+            "• Input signal parameters\n"
+            "• Sensor parameters\n\n"
+            "All current values will be lost.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No  # Default button
+        )
+        
+        # If user confirms, proceed with reset
+        if reply == QMessageBox.Yes:
+            # Reset default models
+            self.controller_pid = ControllerPID()
+            self.plant_controller = get_plant(self.plant_type)
+            self.input_controller = Input()
+            self.sensor_controller = Sensor()
+
+            self.update_control_label()
+            self.update_plant_label()
+            self.update_sensor_label()
+            
+            # Optional: Show success message
+            QMessageBox.information(
+                self,
+                "Reset Complete",
+                "All simulation components have been reset to default values."
+            )
+            #print("Reset confirmed - components reset to defaults")
+        else:
+            #print("Reset canceled by user")
+            pass
     
-    #--------------- End Stop Button Methods ---------------
-
-
-    #--------------- Simulate Button Methods ---------------
-
-    def on_simulate_button_clicked(self):
-        """
-        Handle click on simulateButton to start the simulation.
-        Args:
-            None
-        Returns:
-            None
-        """
-        self.stopButton.setDisabled(False)
-        self.simulateButton.setDisabled(True)
-        self.outputLabel.setDisabled(False)
-        self.inputLabel.setDisabled(True)
-        self.controlLabel.setDisabled(True)
-        self.plantLabel.setDisabled(True)
-        self.sensorLabel.setDisabled(True)
-        #print("Simulate button clicked")
-
-    #--------------- End Simulate Button Methods ---------------
-
+    #--------------- End Reset Button Methods ---------------
 
     #--------------- Action Save Methods ---------------
     def on_action_save_triggered(self):
@@ -454,3 +474,31 @@ class Simulator(QMainWindow):
     #--------------- End Load Params Methods --------------
 
 
+
+    def closeEvent(self, event):
+        """
+        Handle the window close event to prompt for saving changes.
+        Args:
+            event: The close event
+        Returns:
+            None
+        """
+        
+        reply = QMessageBox.question(
+            self,
+            "Save Changes?",
+            "Do you want to save your changes before closing?",
+            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
+            QMessageBox.Save  # Default button
+        )
+        
+        if reply == QMessageBox.Save:
+            # Save changes and close
+            self.on_action_save_triggered()
+            event.accept()
+        elif reply == QMessageBox.Discard:
+            # Close without saving
+            event.accept()
+        else:
+            # Cancel the close operation
+            event.ignore()

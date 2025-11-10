@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1124</width>
-    <height>602</height>
+    <width>1115</width>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -143,25 +143,6 @@ border-style:inset;
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
-      <widget class="QPushButton" name="simulateButton">
-       <property name="geometry">
-        <rect>
-         <x>990</x>
-         <y>490</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>91</width>
-         <height>41</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Simulate</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="outputLabel">
        <property name="geometry">
         <rect>
@@ -256,12 +237,12 @@ border-style:inset;
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
-      <widget class="QPushButton" name="stopButton">
+      <widget class="QPushButton" name="resetButton">
        <property name="geometry">
         <rect>
-         <x>880</x>
+         <x>930</x>
          <y>490</y>
-         <width>91</width>
+         <width>161</width>
          <height>41</height>
         </rect>
        </property>
@@ -281,7 +262,7 @@ border-style:inset;
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Stop</string>
+        <string>Reset Parameters</string>
        </property>
       </widget>
       <widget class="QLabel" name="controlLabel">
@@ -336,17 +317,67 @@ border-style:inset;
         <string>Sensor</string>
        </property>
       </widget>
+      <widget class="QLabel" name="controlLabelIndicator">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>90</y>
+         <width>181</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>PID Control</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="plantLabelIndicator">
+       <property name="geometry">
+        <rect>
+         <x>620</x>
+         <y>90</y>
+         <width>181</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Plant Control</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sensorLabelIndicator">
+       <property name="geometry">
+        <rect>
+         <x>450</x>
+         <y>270</y>
+         <width>181</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Sensor</string>
+       </property>
+      </widget>
       <zorder>line_1</zorder>
       <zorder>line_4</zorder>
       <zorder>line_3</zorder>
-      <zorder>simulateButton</zorder>
       <zorder>outputLabel</zorder>
       <zorder>line_2</zorder>
-      <zorder>stopButton</zorder>
+      <zorder>resetButton</zorder>
       <zorder>inputLabel</zorder>
       <zorder>controlLabel</zorder>
       <zorder>plantLabel</zorder>
       <zorder>sensorLabel</zorder>
+      <zorder>controlLabelIndicator</zorder>
+      <zorder>plantLabelIndicator</zorder>
+      <zorder>sensorLabelIndicator</zorder>
      </widget>
     </item>
    </layout>
@@ -356,7 +387,7 @@ border-style:inset;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1124</width>
+     <width>1115</width>
      <height>21</height>
     </rect>
    </property>

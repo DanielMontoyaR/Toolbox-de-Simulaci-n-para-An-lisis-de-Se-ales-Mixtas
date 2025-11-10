@@ -33,6 +33,8 @@ class ControlEditor(QDialog):
         self.kiInput.setValidator(validator)
         self.kdInput.setValidator(validator)
 
+        self.setWindowTitle("PID Control Editor")
+
         # PID label configuration
         self.pidLabel.setAlignment(Qt.AlignCenter)
 

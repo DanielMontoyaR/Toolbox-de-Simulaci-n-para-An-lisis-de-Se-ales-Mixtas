@@ -23,6 +23,10 @@ class Plant(ABC):
         """
         self.name = name
         self.parameters = parameters or {}
+        self.plant_component_description = ("Plant Model:\n"
+                                   "The physical system being controlled by the PID.\n"
+                                   "Defines the system dynamics through its transfer function.\n\n"
+                                   f"Current plant type: {self.name}")
 
     @abstractmethod
     def get_transfer_function(self):
@@ -77,7 +81,15 @@ class Plant(ABC):
         """
         self.parameters.update(kwargs)
 
-
+    def get_component_description(self):
+        """
+        Get the description of the Plant component
+        Args:
+            None
+        Returns:
+            str: Description of the Plant component
+        """
+        return self.plant_component_description
 # ---------------- Specific Plants ---------------- #
 
 class BallAndBeamPlant(Plant):
