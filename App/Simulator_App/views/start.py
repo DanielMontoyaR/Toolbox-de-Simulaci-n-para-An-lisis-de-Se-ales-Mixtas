@@ -4,15 +4,13 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
 from utils.file_utils import get_project_file, validate_project_file
-from views.create_project import CreateProject
-from views.simulator import Simulator
 
 class Start(QDialog):
-    def __init__(self, stacked_widget):
+    def __init__(self, app_manager):
         """
         Start dialog for opening or creating projects.
         Args:
-            stacked_widget (QStackedWidget): The main stacked widget to switch views.
+            app_manager: The ApplicationManager instance.
         Returns:
             None
         """
@@ -20,16 +18,13 @@ class Start(QDialog):
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/start.ui")
         loadUi(ui_path, self)
 
-        self.stacked_widget = stacked_widget
+        self.app_manager = app_manager
 
         self.projectopenButton.clicked.connect(self.open_project)
         self.projectcreateButton.clicked.connect(self.create_project)
 
         self.errorLabel.hide()
         self.errorLabelInfo.hide()
-
-        self.stacked_widget.resize(self.size())
-
 
     def keyPressEvent(self, event):
         """
@@ -43,7 +38,6 @@ class Start(QDialog):
             event.ignore()  # Ignore ESC
         else:
             super().keyPressEvent(event)
-
 
     def open_project(self):
         """
@@ -68,7 +62,6 @@ class Start(QDialog):
             self.errorLabel.setText("")
 
         # validate the structure before proceeding
-
         valid, error_message, error_log = validate_project_file(file_path)
 
         if not valid:
@@ -84,16 +77,14 @@ class Start(QDialog):
             self.errorLabel.hide()
             self.errorLabelInfo.hide()
             content = file.read()
-            print(f"Content:\n{content}")
+            #print(f"Content:\n{content}")
 
             match = re.search(r"Plant type:\s*(.+)", content)
             plant_type = match.group(1).strip() if match else "Unknown"
 
-            # Change window to Simulator
+            
             project_type = "Open Project"
-            self.simulator = Simulator(plant_type, file_path, project_type)
-            self.simulator.show()
-            self.stacked_widget.close()
+            self.app_manager.show_simulator(plant_type, file_path, project_type)
 
     def create_project(self):
         """
@@ -103,6 +94,5 @@ class Start(QDialog):
         Returns:
             None
         """
-        createProject = CreateProject(self.stacked_widget)
-        self.stacked_widget.addWidget(createProject)
-        self.stacked_widget.setCurrentWidget(createProject)
+        
+        self.app_manager.show_create_project()

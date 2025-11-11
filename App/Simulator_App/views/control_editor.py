@@ -55,6 +55,11 @@ class ControlEditor(QDialog):
         self.kpLabelInfo.setToolTip(self.controller_pid.get_descriptions()["kp"])
         self.kiLabelInfo.setToolTip(self.controller_pid.get_descriptions()["ki"])
 
+        #Placeholders for inputs
+        self.kpInput.setPlaceholderText("e.g., 1 for Ki = 1")
+        self.kiInput.setPlaceholderText("e.g., 2 for Ki = 2")
+        self.kdInput.setPlaceholderText("e.g., 3 for Ki = 3")
+
         # Load current values from the model (if any)
         #self.load_from_model()
 

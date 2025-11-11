@@ -4,28 +4,25 @@ from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from utils.file_utils import create_project_file
 from utils.input_utils import create_project_validate_inputs
-from views.simulator import Simulator
 
 class CreateProject(QDialog):
-    def __init__(self, stacked_widget):
+    def __init__(self, app_manager):
         """
         Dialog for creating a new project.
         Args:
-            stacked_widget: The stacked widget to manage navigation.
+            app_manager: The ApplicationManager instance.
         Returns:
             None"""
         super().__init__()
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/project_create.ui")
         loadUi(ui_path, self)
 
-        self.stacked_widget = stacked_widget  # Store the stacked widget reference
+        self.app_manager = app_manager  # Store the app_manager reference
         self.createButton.clicked.connect(self.create_project)
         self.cancelButton.clicked.connect(self.go_back)
         self.pathButton.clicked.connect(self.browse_path)
         self.plantComboBox.clear()
         self.plantComboBox.addItems(["Ball and Beam", "DC Motor Speed Control", "DC Motor Position Control", "Personalized Plant"])
-        self.stacked_widget.resize(self.size())
-
 
     def keyPressEvent(self, event):
         """
@@ -62,9 +59,6 @@ class CreateProject(QDialog):
         Returns:
             None
         """
-        #print("Project creation initiated")
-        #print(self.nombreproyectolineEdit.text())
-
         validation_result = create_project_validate_inputs(
             self.pathLineEdit.text(),
             self.projectNameLineEdit.text()
@@ -93,18 +87,10 @@ class CreateProject(QDialog):
                 {},  # Empty Sensor parameters
                 self  # parent
             )
-            """
-            simulator = Simulator(self.stacked_widget)
-            self.stacked_widget.addWidget(simulator)
-            self.stacked_widget.setCurrentWidget(simulator)"""
 
+            
             project_type = "New Project"
-
-            self.simulator = Simulator(self.plantComboBox.currentText(), file_path, project_type)
-            self.simulator.show()
-            self.stacked_widget.close()
-
-
+            self.app_manager.show_simulator(self.plantComboBox.currentText(), file_path, project_type)
 
     def go_back(self):
         """
@@ -114,4 +100,4 @@ class CreateProject(QDialog):
         Returns:
             None
         """
-        self.stacked_widget.setCurrentIndex(0)
+        self.app_manager.show_start()

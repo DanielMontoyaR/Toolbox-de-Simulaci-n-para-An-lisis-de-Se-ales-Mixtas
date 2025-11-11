@@ -25,7 +25,7 @@ from views.sensor_editor import SensorEditor
 
 
 class Simulator(QMainWindow):
-    def __init__(self, plant_type, file_path, project_type):
+    def __init__(self, plant_type, file_path, project_type, app_manager):
         """
         Main Simulator Window.
         Args:
@@ -36,8 +36,11 @@ class Simulator(QMainWindow):
             None
         """
         super().__init__()
+        self.app_manager = app_manager
+
         ui_path = os.path.join(os.path.dirname(__file__), "../ui/simulator.ui")
         loadUi(ui_path, self)
+        
 
         self.plant_type = plant_type
 
@@ -473,32 +476,29 @@ class Simulator(QMainWindow):
 
     #--------------- End Load Params Methods --------------
 
-
-
-    def closeEvent(self, event):
+    def handle_close_request(self):
         """
-        Handle the window close event to prompt for saving changes.
+        Handle close request from ApplicationManager.
         Args:
-            event: The close event
+            None
         Returns:
             None
         """
+        #print("Close request received")
         
         reply = QMessageBox.question(
             self,
             "Save Changes?",
-            "Do you want to save your changes before closing?",
+            "Do you want to save your changes before returning to start?",
             QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
             QMessageBox.Save  # Default button
         )
         
         if reply == QMessageBox.Save:
-            # Save changes and close
+            # Save changes and return to start
             self.on_action_save_triggered()
-            event.accept()
+            self.app_manager.show_start()
         elif reply == QMessageBox.Discard:
-            # Close without saving
-            event.accept()
-        else:
-            # Cancel the close operation
-            event.ignore()
+            # Return to start without saving
+            self.app_manager.show_start()
+        # If Cancel, do nothing (keep simulator open)
