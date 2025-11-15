@@ -82,7 +82,7 @@ class PlantEditor(QDialog):
         self.param6Input.textChanged.connect(lambda text: self.update_plant_preview())
 
         # Load current values from the model (if any)
-        #self.load_from_model()
+        self.load_from_model()
 
     def load_from_model(self):
         """

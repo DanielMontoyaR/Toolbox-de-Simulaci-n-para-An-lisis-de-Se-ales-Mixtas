@@ -61,7 +61,7 @@ class ControlEditor(QDialog):
         self.kdInput.setPlaceholderText("e.g., 3 for Ki = 3")
 
         # Load current values from the model (if any)
-        #self.load_from_model()
+        self.load_from_model()
 
     def load_from_model(self):
         """
