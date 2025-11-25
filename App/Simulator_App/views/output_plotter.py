@@ -87,7 +87,7 @@ class OutputPlotter(QDialog):
         # Button Configuration
         #self.plotButton.clicked.connect(self.plot_output)
         # Combobox configuration
-        self.plotTypecomboBox.addItems(["Step Response", "Impulse Response", "Bode Plot", "Nyquist Plot", "Root Locus"])
+        self.plotTypecomboBox.addItems(["Step Response", "Impulse Response", "Bode Plot", "Nyquist Plot", "Root Locus", "Pole-Zero Plot"])
         self.plotTypecomboBox.setCurrentIndex(0)
         self.plotTypecomboBox.currentIndexChanged.connect(self.plot_output)
         
@@ -152,9 +152,9 @@ class OutputPlotter(QDialog):
             
             elif plot_type == "Root Locus":
                 fig = self.output.plot_root_locus()
-            
-            elif plot_type == "Real Time Response":
-                fig = self.output.plot_real_time_response()
+
+            elif plot_type == "Pole-Zero Plot":
+                fig = self.output.plot_pole_zero()
             
             else:
                 print("No valid plot type selected.")

@@ -156,7 +156,7 @@ class Output:
                 response[step_index:] = initial_value + amplitude * y_step_actual[:len(response[step_index:])]
             
             # Create figure
-            fig = Figure(figsize=(10, 6), dpi=80)
+            fig = Figure(dpi=80)
             ax = fig.add_subplot(111)
             
             # Plot
@@ -394,6 +394,64 @@ class Output:
         #print("Real time response plot not implemented yet")
         #return None
     """
+    def plot_pole_zero(self):
+        """
+        Plot Pole-Zero diagram using manual scatter plot and return the matplotlib Figure
+        Args:
+            None
+        Returns:
+            Matplotlib Figure object with the Pole-Zero plot
+        """
+        try:
+            closed_loop_tf = self.get_closed_loop_transfer_function()
+            if closed_loop_tf is None:
+                print("No closed-loop transfer function available")
+                return None
+
+            # Get PID parameters for title
+            pid_params = self.pid_object.get_parameters()
+            kp = pid_params["kp"]
+            ki = pid_params["ki"]
+            kd = pid_params["kd"]
+
+            # Get poles and zeros using control library functions
+            poles = ctrl.poles(closed_loop_tf)
+            zeros = ctrl.zeros(closed_loop_tf)
+
+            # Create figure with horizontal orientation
+            fig = Figure(figsize=(10, 10), dpi=80)
+            ax = fig.add_subplot(111)
+
+            # Plot zeros (o) and poles (x)
+            if len(zeros) > 0:
+                ax.scatter(np.real(zeros), np.imag(zeros), marker='o', color='blue', s=100, label='Zeros', facecolors='none', linewidths=2)
+            
+            if len(poles) > 0:
+                ax.scatter(np.real(poles), np.imag(poles), marker='x', color='red', s=100, label='Poles', linewidths=2)
+
+            # Add axes lines
+            ax.axhline(0, color='black', linewidth=0.8, alpha=0.7)
+            ax.axvline(0, color='black', linewidth=0.8, alpha=0.7)
+
+            # Customize the plot
+            ax.set_title(f'Pole-Zero Diagram (Kp={kp}, Ki={ki}, Kd={kd})', pad=20)
+            ax.set_xlabel('Real')
+            ax.set_ylabel('Imaginary')
+            ax.grid(True, linestyle='--', alpha=0.7)
+            ax.set_facecolor((0.95, 0.95, 0.95))
+            
+            # Add legend if there are poles or zeros
+            if len(poles) > 0 or len(zeros) > 0:
+                ax.legend()
+
+            # Adjust margins
+            fig.tight_layout()
+            return fig
+
+        except Exception as e:
+            #print(f"Error plotting Pole-Zero diagram: {e}")
+            return None
+        
 
     # auxiliary method to convert figure to QPixmap (Optional)
     def figure_to_qpixmap(self, fig):
