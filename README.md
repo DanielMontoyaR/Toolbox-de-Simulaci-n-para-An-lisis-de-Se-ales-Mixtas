@@ -42,10 +42,10 @@ The system allows users to visualize, analyze, and adjust PID parameters while o
 ## Project Structure
 
 ```plaintext 
-projects/
+Proyectos/
 └── projects/                             # Example project files and templates
 
-simulator_app/
+Simulator_App/
 ├── simulation_components/                # Business logic and core simulation engine
 │   ├── controller_pid.py                 # PID controller parameters and calculations
 │   ├── input.py                          # Input signal parameters and generators
@@ -99,13 +99,13 @@ simulator_app/
 ---
 
 ## Requirements
-- PyQt5==5.15.9: Framework for the .ui files (Graphic User Interface)
-- matplotlib==3.7.5: For generating graphs and visualizations
-- numpy==1.24.3: For numerical calculations.
-- scipy==1.10.1: For advanced mathematical functions and signal processing.
-- control==0.9.4: Specific library for control systems (transfer functions)
-- Pillow==10.0.1: For image manipulation (used in generating LaTeX equations as images)
-- pyinstaller==5.13.0: For creating the executable (used in build_exe.py)
+- PyQt5==5.15.11: Framework for the .ui files (Graphic User Interface)
+- matplotlib==3.10.7: For generating graphs and visualizations
+- numpy==2.2.6: For numerical calculations.
+- scipy==1.16.0: For advanced mathematical functions and signal processing.
+- control==0.10.2: Specific library for control systems (transfer functions)
+- Pillow==11.2.1: For image manipulation (used in generating LaTeX equations as images)
+- pyinstaller==6.16.0: For creating the executable (used in build_exe.py)
 
 ---
 
