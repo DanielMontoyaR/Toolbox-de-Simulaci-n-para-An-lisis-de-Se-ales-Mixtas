@@ -90,6 +90,7 @@ Simulator_App/
 │   └── start.py                          # Startup screen controller
 │
 ├── build_exe.py                          # Script to build executable distribution
+├── main.py                               # Script to launch the simulator
 ├── docs/                                 # Additional documentation
 │   └── Manual_de_Usuario.pdf             # User manual and application guide
 ├── requirements.txt                      # Project dependencies and packages
@@ -112,4 +113,20 @@ Simulator_App/
 ### Installation
 ```bash
 pip install -r requirements.txt
+```
+---
+
+### To run the simulator
+#### GUI Mode
+To run the code use the following command
+```bash
+cd .\Simulator_App\
+python.exe .\main.py
+```
+
+#### Test Mode
+To run the tests, change the ****mode**** variable of the ****main**** function of the ****main.py**** file to the value of 2 (line 150).
+
+```bash
+mode = 1  # GUI mode, 2 for test mode
 ```
