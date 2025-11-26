@@ -1,7 +1,12 @@
+# Standard library imports
 import os
+
+# Third-party imports
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
+
+# Local application imports
 from utils.file_utils import create_project_file
 from utils.input_utils import create_project_validate_inputs
 

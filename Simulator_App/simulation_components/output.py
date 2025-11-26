@@ -1,8 +1,14 @@
+# Standard library imports
+import io
+
+#Scientific imports
+import math
 import control as ctrl
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
-import io
+
+# Third-party imports
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 

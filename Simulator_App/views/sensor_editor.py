@@ -1,10 +1,15 @@
+# Standard library imports
 import os
+
+# Third-party imports
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtCore import QRegExp, QLocale
+
+# Local application imports
 from simulation_components.sensor import Sensor
 from utils.input_utils import simulator_create_pixmap_equation
 

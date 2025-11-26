@@ -1,4 +1,7 @@
+#Standard library imports
 import os
+
+#Third-party imports
 from PyQt5.QtWidgets import QDialog, QVBoxLayout
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
@@ -6,12 +9,13 @@ from PyQt5.QtGui import QDoubleValidator, QRegExpValidator
 from PyQt5.QtCore import QRegExp
 from PyQt5 import QtWidgets
 
+#Scientific imports
 import control as ctrl
 import numpy as np
-
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+#Local application imports
 from simulation_components.input import Input
 from simulation_components.controller_pid import ControllerPID
 from simulation_components.plant import Plant

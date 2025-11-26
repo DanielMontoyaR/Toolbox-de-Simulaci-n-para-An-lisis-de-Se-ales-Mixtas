@@ -1,8 +1,13 @@
+# Standard library imports
 import os
 import re
+
+# Third-party imports
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
+
+# Local application imports
 from utils.file_utils import get_project_file, validate_project_file
 
 class Start(QDialog):

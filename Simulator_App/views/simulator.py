@@ -17,6 +17,7 @@ from utils.clickable_label import ClickableLabel
 from utils.input_utils import simulator_create_pixmap_equation
 from utils.file_utils import save_simulation_config, extract_params_from_file, save_simulation_config_as
 
+# Local application imports
 from views.control_editor import ControlEditor
 from views.input_editor import InputEditor
 from views.plant_editor import PlantEditor

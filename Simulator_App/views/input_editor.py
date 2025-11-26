@@ -1,11 +1,16 @@
+# Standard library imports
 import os
+
+# Third-party imports
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
-from simulation_components.input import Input
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtCore import QRegExp
+
+# Local application imports
+from simulation_components.input import Input
 
 
 

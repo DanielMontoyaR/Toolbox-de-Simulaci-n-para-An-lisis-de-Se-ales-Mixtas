@@ -1,6 +1,11 @@
+# Standard library imports
 import sys
+
+# Third-party imports
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
+
+# Local application imports
 from views.start import Start
 from views.simulator import Simulator
 from views.create_project import CreateProject

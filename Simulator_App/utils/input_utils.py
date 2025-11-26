@@ -1,8 +1,11 @@
+# Standard library imports
 import os
-# input_utils.py
+import io
+
+# Third-party imports
 import matplotlib.pyplot as plt
 from PyQt5.QtGui import QPixmap
-import io
+
 def create_project_validate_inputs(file_path, project_name):
     """
     Validate inputs for creating a new project.

@@ -1,3 +1,4 @@
+# Local application imports
 from .plant import PersonalizedPlant
 
 class Sensor(PersonalizedPlant):

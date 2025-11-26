@@ -1,10 +1,16 @@
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from PyQt5.QtCore import QStandardPaths
-from simulation_components.plant import get_plant
-from simulation_components.sensor import Sensor
+# Standard library imports
 import os
 import re
 import ast
+
+# Third-party imports
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtCore import QStandardPaths
+
+# Local application imports
+from simulation_components.plant import get_plant
+from simulation_components.sensor import Sensor
+
 
 MIN_SAMPLES = 10
 MAX_SAMPLES = 10000
