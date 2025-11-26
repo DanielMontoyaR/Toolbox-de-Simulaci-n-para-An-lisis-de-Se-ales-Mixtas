@@ -31,6 +31,7 @@ class SensorEditor(QDialog):
         # Button Configuration
         self.applyButton.clicked.connect(self.apply_changes_to_model)
         self.cancelButton.clicked.connect(self.reject)
+        self.clearButton.clicked.connect(self.clear_inputs)
 
         # Sensor label configuration
         self.sensorLabel.setAlignment(Qt.AlignCenter)
@@ -47,7 +48,7 @@ class SensorEditor(QDialog):
         self.sensorDenominatorInput.setValidator(validator)
         
         self.sensorNumeratorInput.setPlaceholderText("e.g., 1, 0, 5 for s^2 + 5")
-        self.sensorDenominatorInput.setPlaceholderText("e.g., 1, 2, 1 for s^2 + 2s + 1")
+        self.sensorDenominatorInput.setPlaceholderText("e.g., 1, 0, 5 for s^2 + 5")
 
         # Real-time connection of inputs to preview
         self.sensorNumeratorInput.textChanged.connect(self.update_sensor_preview)
@@ -176,3 +177,15 @@ class SensorEditor(QDialog):
             #print("Sensor Transfer Function:")
             #print(self.sensor_controller.get_transfer_function())
             self.accept()  # Close dialog with Accepted status
+
+    def clear_inputs(self):
+        """
+        Clear all input fields
+        Args:
+            None
+        Returns:
+            None
+        """
+        self.sensorNumeratorInput.clear()
+        self.sensorDenominatorInput.clear()
+        self.update_sensor_preview()

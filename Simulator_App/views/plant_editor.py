@@ -31,6 +31,7 @@ class PlantEditor(QDialog):
         # Button Configuration
         self.applyButton.clicked.connect(self.apply_changes_to_model)
         self.cancelButton.clicked.connect(self.reject)
+        self.clearButton.clicked.connect(self.clear_inputs)
 
         #Plant label configuration
         self.plantLabel.setAlignment(Qt.AlignCenter)
@@ -190,3 +191,16 @@ class PlantEditor(QDialog):
             #print("Transfer Function")
             #print(self.plant_controller.get_transfer_function())
             self.accept()  # Close dialog with Accepted status
+
+
+    def clear_inputs(self):        
+        """
+        Clear all input fields
+        Args:
+            None
+        Returns:
+            None
+        """
+        for i in range(1, 7):
+            getattr(self, f"param{i}Input").clear()
+        self.update_plant_preview()

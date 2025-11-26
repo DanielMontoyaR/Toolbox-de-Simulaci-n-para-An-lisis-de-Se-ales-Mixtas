@@ -40,6 +40,7 @@ class InputEditor(QDialog):
         # Button Configuration
         self.applyButton.clicked.connect(self.apply_changes_to_model)
         self.cancelButton.clicked.connect(self.reject)
+        self.clearButton.clicked.connect(self.clear_inputs)
 
         # Set tooltips
         self.stepTimeLabelInfo.setToolTip(self.input_controller.get_descriptions()["step_time"])
@@ -79,14 +80,18 @@ class InputEditor(QDialog):
             None
         """
         try:
-            step_time = float(self.stepTimeInput.text())
-            initial_value = float(self.initialValueInput.text())
-            final_value = float(self.finalValueInput.text())
-            total_time = float(self.totalTimeInput.text())
-            sample_time = float(self.sampleTimeInput.text())
+            params = self.input_controller.get_parameters()
+            step_time = float(self.stepTimeInput.text() or params["step_time"])
+            initial_value = float(self.initialValueInput.text() or params["initial_value"])
+            final_value = float(self.finalValueInput.text() or params["final_value"])
+            total_time = float(self.totalTimeInput.text() or params["total_time"])
+            sample_time = float(self.sampleTimeInput.text() or params["sample_time"])
         except ValueError:
             # Handle invalid input (e.g., show an error message)
-            print("Invalid input. Please enter valid numbers.")
+            #print("Invalid input. Please enter valid numbers.")
+            self.errorLabel.show()
+            self.errorLabelInfo.show()
+            self.errorLabelInfo.setToolTip("Please enter valid numeric values for all fields.")
             return
         
         old_params = self.input_controller.get_parameters()
@@ -103,3 +108,17 @@ class InputEditor(QDialog):
             self.errorLabelInfo.hide()
             print("Updated Input Parameters:", self.input_controller.get_parameters())
             self.accept()  # Close dialog and indicate success
+
+    def clear_inputs(self):
+        """
+        Clear all input fields
+        Args:
+            None
+        Returns:
+            None
+        """
+        self.stepTimeInput.clear()
+        self.initialValueInput.clear()
+        self.finalValueInput.clear()
+        self.totalTimeInput.clear()
+        self.sampleTimeInput.clear()

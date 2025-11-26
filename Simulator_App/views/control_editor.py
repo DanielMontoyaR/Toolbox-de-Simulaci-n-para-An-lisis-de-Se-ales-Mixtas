@@ -41,6 +41,7 @@ class ControlEditor(QDialog):
         # Button Configuration
         self.applyButton.clicked.connect(self.apply_changes_to_model)
         self.cancelButton.clicked.connect(self.reject)
+        self.clearButton.clicked.connect(self.clear_inputs)
 
         # Real-time connection of inputs to labels
         self.kpInput.textChanged.connect(lambda text: self.update_pid_preview())
@@ -117,3 +118,16 @@ class ControlEditor(QDialog):
             
         self.controller_pid.set_parameters(kp, ki, kd)
         self.accept()
+    
+    def clear_inputs(self):
+        """
+        Clear all input fields
+        Args:
+            None
+        Returns:
+            None
+        """
+        self.kpInput.clear()
+        self.kiInput.clear()
+        self.kdInput.clear()
+        self.update_pid_preview()
